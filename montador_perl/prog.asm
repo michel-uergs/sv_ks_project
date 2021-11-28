@@ -11,6 +11,8 @@ bneg 10
 branch 11
 bzero 1
 bzero -1
+bnneg 12
+bnzero 10
 add r1 r2 r3
 sub r1 r2 r4
 and r0 r0 r0

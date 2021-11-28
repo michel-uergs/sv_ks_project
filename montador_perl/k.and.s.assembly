@@ -124,9 +124,15 @@ sub process_asm()
     } elsif ($comm eq "bneg") {
       print "line $line BNEG $args[1]\n" if ($debug);
       $result = 0x0300 + &check_addr_mem($args[1], "BNEG", $line_file);
+    } elsif ($comm eq "bnneg") {
+      print "line $line BNNEG $args[1]\n" if ($debug);
+      $result = 0x0C00 + &check_addr_mem($args[1], "BNEG", $line_file);
     } elsif ($comm eq "bzero") {
       print "line $line BZERO $args[1]\n" if ($debug);
       $result = 0x0200 + &check_addr_mem($args[1], "BZERO", $line_file);
+    } elsif ($comm eq "bnzero") {
+      print "line $line BNZERO $args[1]\n" if ($debug);
+      $result = 0x0A00 + &check_addr_mem($args[1], "BZERO", $line_file);
     } elsif ($comm eq "branch") {
       print "line $line BRANCH $args[1]\n" if ($debug);
       $result = 0x0100 + &check_addr_mem($args[1], "BRANCH", $line_file);
