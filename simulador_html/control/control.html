@@ -1,0 +1,289 @@
+</html>
+<head>
+<title>K&S Computer - Control Unit</title>
+<style type="text/css">
+  body {background-color:lightgrey}
+</style>
+
+<script src="../baseconv.js"></script>
+<script src="../microir.js"></script>
+
+<script>
+function setGlobals()
+{
+  AADDR_VALUE = "00";
+  BADDR_VALUE = "00";
+  CADDR_VALUE = "00";
+  ALU_VALUE = "00";
+  MMADDR_VALUE = "00000";
+  SWITCH_VALUE = "0000";
+
+  PC_VALUE = "00000";
+  IR_VALUE = "0000000000000000";
+
+  //document.microprog.numberBase[2].selected = true;
+  setMicroInst(0);
+  setPC();
+  setIR();
+}
+
+function setPC()
+{
+   document.microprog.PC.value =
+getNumber(PC_VALUE,2,Math.abs(getCUNumberBase()),5);
+}
+
+function clearPC()
+{
+  document.microprog.PC.value = "";
+}
+
+function getPC()
+{
+  return "MM" +
+getNumber(document.microprog.PC.value,Math.abs(getCUNumberBase()),10,5);
+}
+
+function setIR()
+{
+// IR is always base 2 now.
+//  if (getCUNumberBase() == -10)
+//    document.microprog.IR.value = getInstruction(IR_VALUE);
+//  else
+    document.microprog.IR.value = getNumber(IR_VALUE,2,2,16);
+}
+
+function clearIR()
+{
+  document.microprog.IR.value = "";
+}
+
+function setIRUpPCDownArrowBlue()
+{
+  // NOTE: These pathnames are relative to the datapath file since these functions
+  //       are called from the datapath.html file.
+
+  document.irUpArrow.src = "../control/upArrowBlue.gif";
+  document.pcDownArrow.src = "../control/downArrowBlue.gif";
+}
+
+function setIRUpPCDownArrowRed()
+{
+  document.irUpArrow.src = "../control/upArrowRed.gif";
+  document.pcDownArrow.src = "../control/downArrowRed.gif";
+}
+
+function setTransArrowsBlue()
+{
+  if (takeBranch())
+    document.branchArrow.src = "../control/leftArrowBlue.gif";
+  else
+  {
+    document.pcUpArrow.src = "../control/upArrowBlue.gif";
+    document.microIRArrow.src = "../control/upArrowBlue.gif";
+  }
+}
+
+function setTransArrowsRed()
+{
+  if (takeBranch())
+    document.branchArrow.src = "../control/leftArrowRed.gif";
+  else
+  {
+    document.pcUpArrow.src = "../control/upArrowRed.gif";
+    document.microIRArrow.src = "../control/upArrowRed.gif";
+  }
+}
+
+function takeBranch()
+{
+  var key;
+
+  key = getInstruction(IR_VALUE).substring(0,2);
+
+  return ((key == 'BR') ||
+          (key == "BZ" && top.datapath.document.datapath.zero.checked) ||
+          (key == "BN" && top.datapath.document.datapath.negative.checked));
+}
+
+function setNewPC()
+{
+  if (takeBranch())
+    PC_VALUE = IR_VALUE.substring(11,16);
+  else
+    PC_VALUE = getNumber((getNumber(PC_VALUE,2,10,4) + 1), 10, 2, 5);
+
+  setPC();
+}
+
+function setMicroIR(AAddr,BAddr,CAddr,ALU,MAddr,Switches)
+{
+  AADDR_VALUE = AAddr;
+  BADDR_VALUE = BAddr;
+  CADDR_VALUE = CAddr;
+  ALU_VALUE = ALU;
+  MMADDR_VALUE = MAddr;
+  SWITCH_VALUE = Switches;
+
+  setMicroInst(0);
+}
+
+function setNewMicroIR()
+{
+  var key;
+
+  key = getInstruction(IR_VALUE).substring(0,2);
+
+  if      (key == "LO")
+    setMicroIR("00","00", IR_VALUE.substring(9,11), "00",
+IR_VALUE.substring(11,16), "1010");
+  else if (key == "ST")
+    setMicroIR(IR_VALUE.substring(9,11),IR_VALUE.substring(9,11),"00", "01",
+IR_VALUE.substring(11,16),"0101");
+  else if (key == "MO")
+
+setMicroIR(IR_VALUE.substring(14,16),IR_VALUE.substring(14,16),IR_VALUE.substring(
+12,14),"01","00000","1001");
+  else if (key == "AD")
+
+setMicroIR(IR_VALUE.substring(12,14),IR_VALUE.substring(14,16),IR_VALUE.substring(
+10,12),"00","00000","1001");
+  else if (key == "SU")
+
+setMicroIR(IR_VALUE.substring(12,14),IR_VALUE.substring(14,16),IR_VALUE.substring(
+10,12),"11","00000","1001");
+  else if (key == "AN")
+
+setMicroIR(IR_VALUE.substring(12,14),IR_VALUE.substring(14,16),IR_VALUE.substring(
+10,12),"10","00000","1001");
+  else if (key == "OR")
+
+setMicroIR(IR_VALUE.substring(12,14),IR_VALUE.substring(14,16),IR_VALUE.substring(
+10,12),"01","00000","1001");
+  else
+    setMicroIR("00","00","00","00","00000","0000");
+}
+
+function getCUNumberBase()
+{
+  //CU now uses the same number base as the datapath for the PC.
+  //return (document.microprog.numberBase[
+  //          document.microprog.numberBase.selectedIndex].value);
+
+  return(top.datapath.getNumberBase());
+}
+
+function CUBaseChange()
+{
+  setIR();
+  setPC();
+}
+</script>
+
+</head>
+
+<body onLoad='setGlobals()'>
+
+<form name=microprog>
+
+<center>
+<b>Control Unit</b>
+<hr>
+
+<!-- Whole frame table -->
+
+<table border=0 cellspacing=0 cellpadding=0>
+
+<tr><td colspan=3>
+
+<!-- Micro-IR table -->
+<table bgcolor=white width=100% border=2 cellspacing=1 cellpadding=1>
+<tr>
+<td colspan=6 align=center><font color=blue><b>Knob &amp; Switch Settings
+</b></font></td>
+</tr>
+
+<tr>
+<td><font color=green>A Addr:</font></td>
+<td><font color=green>B Addr:</font></td>
+<td><font color=green>ALU Op:</font></td>
+<td><font color=green>Switch Pos:</font></td>
+<td><font color=green>C Addr:</font></td>
+<td><font color=green>RW Addr:</font></td>
+</tr>
+<tr>
+<td><input type=text size=2 maxlength=2 name=AAddr0
+     onfocus='blur();'></td>
+<td><input type=text size=2 maxlength=2 name=BAddr0
+     onfocus='blur();'></td>
+<td><input type=text size=2 maxlength=2 name=ALU0
+     onfocus='blur();'></td>
+<td><input type=text size=4 maxlength=4 name=SW0
+     onfocus='blur();'></td>
+<td><input type=text size=2 maxlength=2 name=CAddr0
+     onfocus='blur();'></td>
+<td><input type=text size=5 maxlength=5 name=MMAddr0
+     onfocus='blur();'></td>
+</tr>
+</table> <!-- End micro-IR table -->
+
+</td></tr>
+
+<tr>
+<td rowspan=2 valign=bottom height=75%>
+
+<table width=100% bgcolor=white border=2 cellspacing=1 cellpadding=1>
+<tr>
+<td><center><input type=button value="Reset"
+                   onclick='PC_VALUE="00000"; setPC();'></center>
+<font color=green>PC:</font><input type=text size=5 maxlength=5 name=PC
+           onfocus='blur();'>
+</td>
+</tr>
+</table>
+
+<td></td>
+<td valign=center align=center><img name=microIRArrow src="upArrowBlue.gif"></td>
+</tr>
+
+<tr>
+<td align=center valign=center><img name=branchArrow src="leftArrowBlue.gif"></td>
+
+<td>
+<table width=100%  bgcolor=white border=2 cellspacing=1 cellpadding=1>
+<tr>
+<td align=center><font color=blue><b>Instruction<br>Interpretation</b></font></td>
+</tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td align=left><img name=pcDownArrow src="downArrowBlue.gif">
+  <img name=pcUpArrow src="upArrowBlue.gif"></td>
+<td></td>
+<td align=center><img name=irUpArrow src="upArrowBlue.gif"></td>
+</tr>
+
+<tr>
+<td valign=top>
+<table width=75% border=2 bgcolor=white cellspacing=1 cellpadding=1>
+<tr><td align=center><font color=blue><b>+1</b></font></td></tr>
+</table>
+</td>
+
+<td colspan=2 align=right>
+<table width=100% border=2 bgcolor=white cellspacing=1 cellpadding=1>
+<tr><td>
+<font color=green>IR:</font><input type=text size=16 maxlength=16 name=IR
+           onfocus='blur();'>
+</td></tr>
+</table>
+</td>
+</tr>
+</table>
+
+</center>
+</form>
+</body>
+</html>

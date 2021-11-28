@@ -1,0 +1,136 @@
+</html>
+<head>
+<title>K&S Computer - Microprogram Unit</title>
+<style type="text/css">
+  body {background-color:lightgrey}
+</style>
+
+<script src="../baseconv.js"></script>
+<script src="../microir.js"></script>
+
+<script>
+function setGlobals()
+{
+  AADDR_VALUE = "xx";
+  BADDR_VALUE = "xx";
+  CADDR_VALUE = "xx";
+  ALU_VALUE = "xx";
+  MMADDR_VALUE = "xxxxx";
+  SWITCH_VALUE = "xxxx";
+
+  setMicroInst(0);
+  setMicroInst(1);
+  setMicroInst(2);
+  setMicroInst(3);
+  setMicroInst(4);
+}
+
+</script>
+</head>
+
+<body onLoad='setGlobals()'>
+
+<form name=microprog>
+<center>
+<b>Microprogram Memory</b>
+<hr>
+
+<table bgcolor=white width=100% border=2 cellspacing=1 cellpadding=0>
+
+<tr>
+<td><font color=green>A Addr:</font></td>
+<td><font color=green>B Addr:</font></td>
+<td><font color=green>ALU Op:</font></td>
+<td><font color=green>Switch Pos:</font></td>
+<td><font color=green>C Addr:</font</td>
+<td><font color=green>RW Addr:</font></td> 
+<td><font color=green> </font></td>
+</tr>
+<tr>
+<td><input type=text size=2 maxlength=2 name=AAddr0
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=BAddr0
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=ALU0
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=4 maxlength=4 name=SW0
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=CAddr0
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=5 maxlength=5 name=MMAddr0
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><a href="javascript:loadKnobsAndSwitches(0);"><img border=0 
+src="loadArrowGreen.gif"></a></td>
+</tr>
+
+<tr>
+<td><input type=text size=2 maxlength=2 name=AAddr1
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=BAddr1
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=ALU1
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=4 maxlength=4 name=SW1
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=CAddr1
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=5 maxlength=5 name=MMAddr1
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><a href="javascript:loadKnobsAndSwitches(1);"><img border=0 
+src="loadArrowGreen.gif"></a></td>
+</tr>
+
+<tr>
+<td><input type=text size=2 maxlength=2 name=AAddr2
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=BAddr2
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=ALU2
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=4 maxlength=4 name=SW2
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=CAddr2
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=5 maxlength=5 name=MMAddr2
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><a href="javascript:loadKnobsAndSwitches(2);"><img border=0 
+src="loadArrowGreen.gif"></a></td>
+</tr>
+
+<tr>
+<td><input type=text size=2 maxlength=2 name=AAddr3
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=BAddr3
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=ALU3
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=4 maxlength=4 name=SW3
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=CAddr3
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=5 maxlength=5 name=MMAddr3
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><a href="javascript:loadKnobsAndSwitches(3);"><img border=0 
+src="loadArrowGreen.gif"></a></td>
+</tr>
+
+<tr>
+<td><input type=text size=2 maxlength=2 name=AAddr4
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=BAddr4
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=ALU4
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=4 maxlength=4 name=SW4
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=2 maxlength=2 name=CAddr4
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><input type=text size=5 maxlength=5 name=MMAddr4
+     onfocus='if(!top.datapath.CHANGE_ENABLED) blur();'></td>
+<td><a href="javascript:loadKnobsAndSwitches(4);"><img border=0 
+src="loadArrowGreen.gif"></a></td>
+</tr>
+</table>
+</form>
+</body>
+</html>

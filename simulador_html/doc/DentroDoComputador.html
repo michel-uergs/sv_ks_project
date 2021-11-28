@@ -1,0 +1,900 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Chapter 14: Dentro do Computador - Arquitetura de von Neumann</title>
+  <script type="text/javascript">
+function openIt(theURL,w,h)
+{
+  window.open(theURL,"KS", "width=" + w + ",height=" + h);
+}
+  </script>
+</head>
+<body alink="blue" vlink="darkred" link="red" bgcolor="white">
+<p><br>
+</p>
+<center>
+<h2>Introdu&ccedil;&atilde;o &agrave; Computa&ccedil;&atilde;o</h2>
+Tradu&ccedil;&atilde;o do cap&iacute;tulo 14 de <span
+ style="font-weight: bold;"><br>
+"</span>A Balanced Introduction to Computer Science and Programming" <br>
+de<span style="font-weight: bold;"> </span>David Reed<span
+ style="font-weight: bold;">, </span>Creighton University<span
+ style="font-weight: bold;">, </span>Prentice Hall
+<p></p>
+<hr>
+<p><br>
+</p>
+<h2> Cap&iacute;tulo 14: Dentro do Computador - A arquitetura de von
+Neumann</h2>
+</center>
+<p><br>
+Como discutido no cap&iacute;tulo 1, virtualmente todos os computadores
+modernos tem o mesmo esquema b&aacute;sico, conhecido como arquitetura
+de von Neumann. Este esquema divide o hardware de um computador em
+tr&ecirc;s componentes principais: mem&oacute;ria, Unidade Central de
+Processamento (UCP ou CPU) e dispositivos de entrada e sa&iacute;da. A
+mem&oacute;ria armazena dados e instru&ccedil;&otilde;esde programas. A
+CPU &eacute; encarregada de buscar as isntru&ccedil;&otilde;es e dados
+da mem&oacute;ria, executar as instru&ccedil;&otilde;es e ent&atilde;o
+armazenar os valores resultantes de volta na mem&oacute;ria. Os
+dispositivos de entrada (tais como teclado, mouse e microfone) e
+dispositivos de sa&iacute;da (tais como a tela, altofalantes e
+impressora) possibilitam a intera&ccedil;&atilde;o com o
+usu&aacute;rio, permitindo que as pessoas forne&ccedil;am entradas e
+exibindo dados, instru&ccedil;&otilde;es e os resultados das
+computa&ccedil;&otilde;es.</p>
+<p>Este cap&iacute;tulo explora os detalhes da arquitetura de von
+Neumann, descrevendo o funcionamento interno de um computador. As
+explica&ccedil;&otilde;es s&atilde;o dadas de maneira incremental,
+partindo de um model simples de Parte Operativa de CPU e ent&atilde;o
+acrescentando a mem&oacute;ria principal e depois uma Unidade de
+Controle. Quando combinados com dispositivos de entrada e de
+sa&iacute;da, estes componentes representam um modelo preciso (apesar
+de simplificado) de um computor program&aacute;vel moderno. Para
+facilitar o aprendizado, s&atilde;o utilizados simuladores
+(desenvolvidos por Grant Braught do Dickinson College) para cada modelo.<br>
+</p>
+<p><br>
+</p>
+<h3> Subunidades e Parte Operativa da CPU<br>
+</h3>
+<p>Como visto no cap&iacute;tulo1, a CPU age como o c&eacute;rebro do
+computador. Ela &eacute; respons&aacute;vel por obter dados e
+instru&ccedil;&otilde;es a partir da mem&oacute;ria, executar as
+instru&ccedil;&otilde;es e armazernar os resultados de volta na
+mem&oacute;ria. O conjunto de isntru&ccedil;&otilde;es que uma dada CPU
+de um computador pode entender e executar &eacute; conhecido como a
+linguagem de m&aacute;quina do computador. Os programadores podem
+controlar o comportamento de um computador definindo
+instru&ccedil;&otilde;es para sua CPU - isto pode ser realizado seja
+escrevendo programas diretamente em linguagem de m&aacute;quina ou
+escrevendo programas em uma linguagem de alto n&iacute;vel e
+ent&atilde;o traduzindo para linguagem de m&aacute;quina. Mesmo
+programas que exibem um comportamento complexo s&atilde;o especificados
+para a CPU como sequ&ecirc;ncias de instru&ccedil;&otilde;es simples de
+linguagem de m&aacute;quina, cada uma executando uma tarefa que
+n&atilde;o &eacute; mais complexa do que somar dois n&uacute;meros ou
+copiar dados para uma nova posi&ccedil;&atilde;o na mem&oacute;ria. No
+entanto, A CPU pode executar estas instru&ccedil;&otilde;es de maneira
+t&atilde;o r&aacute;pida que pode ser obtido um comportamento complexo
+do computador.<br>
+</p>
+<h4>Subunidades da CPU <br>
+</h4>
+<p>A CPU &eacute; composta de v&aacute;rias subunidades, cada uma com
+uma fun&ccedil;&atilde;o espec&iacute;fica na opera&ccedil;&atilde;o do
+processador como um todo. Estas subunidades s&atilde;o a Unidade
+Logico-Aritm&eacute;tica (ULA), registradores e Unidade de Controle.</p>
+<p></p>
+<ul>
+  <li>A Unidade Logico-Aritm&eacute;tica &eacute; uma
+cole&ccedil;&atilde;o de circuitos que realizam as
+opera&ccedil;&otilde;es sobre os dados. As opera&ccedil;&otilde;es
+b&aacute;sicas podem incluir adi&ccedil;&atilde;o,
+subtra&ccedil;&atilde;o e manipula&ccedil;&otilde;es de bit (tais como
+deslocamento ou combina&ccedil;&atilde;o de bits)</li>
+  <li><i>Registradores</i> sa&atilde;o posi&ccedil;&otilde;es de
+mem&oacute;ria constru&iacute;das dentro da CPU. Como os registradores
+s&atilde;o integrados diretamente nos circuitos da CPU, os dados nos
+registradores podem ser acessados muito mais rapidamente (5 a 10 vezes
+mais r&aacute;pido) do que dados na mem&oacute;ria principal. No
+entanto, devido ao n&uacute;mero limitado de registradores na CPU
+(usualmente 16 ou 32 registradores), estas posi&ccedil;&otilde;es de
+mem&oacute;ria s&atilde;o reservadas para dados que a CPU est&aacute;
+usando em um dado momento. Para funcionar de maneira efetiva, o
+computador deve copiar dados constantemente entre os registradores e a
+mem&oacute;ria. Estas transfer&ecirc;ncias ocorrem atrav&eacute;s de
+cole&ccedil;&atilde;o de conex&otilde;es chamadas barramentos, que
+conectam&nbsp; os registradores&nbsp; com a ULA e com a mem&oacute;ria
+principal. <br>
+  </li>
+  <li>A <i>Unidade de Controle Unit&nbsp;</i> pode ser vista como "o
+c&eacute;rebro dentro do c&eacute;rebro", pois ela controla as
+v&aacute;rias fun&ccedil;&otilde;es da CPU. A Unidade de Controle
+&eacute; formada de circuitos que realizam a busca de dados e
+instru&ccedil;&otilde;es a partir da mem&oacute;ria principal, bem como
+controla o fluxo de dados do registradores para a ULA e da ULA para os
+registradores.&nbsp;</li>
+</ul>
+<p style="text-align: center;">
+<img alt="CPU subunits" src="14-CPU.gif"><br>
+<b>Figure 14.1: Subunidades da Unidade Central de Processamento (CPU).</b>
+</p>
+<p><br>
+</p>
+<h4>Ciclos da Parte Operativa da CPU<br>
+</h4>
+<p>Os caminhos que os dados seguem dentro da CPU, viajando
+atrav&eacute;s de barramentos a partir dos registradores para a ULA e
+ent&atilde;o de volta para os registradores &eacute; conhecido como
+Parte Operativa da CPU. Todas as tarefas realizadas por um computador,
+desde formatar um documento at&eacute; exibir p&aacute;ginas em um
+navegador Web, s&atilde;o decompostas em sequ&ecirc;ncias de
+opera&ccedil;&otilde;es imples; o computador executa cada
+opera&ccedil;&atilde;o individual movimentando dados dos registradores
+para a ULA, executando computa&ccedil;&otilde;es sobre estes dados na
+ULA e ent&atilde;o armazenam o resultado nos registradores. Uma
+passagem completa pela Parte Operativa da CPU (dos resgistradores
+passando pelos barramentos e ULA e voltando aos registradores) &eacute;
+chamado de ciclo da Parte Operativa, ou ainda ciclo da CPU.</p>
+<p>Relembrando o que vimos no cap&iacute;tulo 1, onde foi definida a
+velocidade da CPU como medida pelo n&uacute;mero de
+instru&ccedil;&otilde;es&nbsp; que a CPU pode executar em um segundo.
+Como cada instru&ccedil;&atilde;o precisa de um ciclo de CPU para
+executar, a velocidade da CPU corresponde diretamente ao n&uacute;mero
+de ciclos de CPU que ocorrem por segundo. Por exemplo, uma CPU de 800
+MHz &eacute; capaz de executar 800 milh&otilde;es de ciclos em um
+&uacute;nico segundo, enquanto uma CPU de 1,4 GHz &eacute; capaz de
+executar 1,4 bilhoes de ciclos de CPU em um segundo. No entanto,
+n&atilde;o se pode avaliar CPUs somente comparando a velocidade dos
+processadores, pois duas linguagens de m&aacute;quina diferentes podem
+dividir a mesma tarefa em diferenets conjuntos de
+isntru&ccedil;&otilde;es e um conjunto de instru&ccedil;&otilde;es pode
+ser mais eficiente que o outro. Isto &eacute;, uma CPU pode ser capaz
+de completar uma dada tarefa em um &uacute;nico ciclo, enquanto outra
+pode precisar de v&aacute;rios ciclos para completar a mesma tarefa.
+Para comparar o desempenho de CPUs, deve-se considerar o conjunto de
+instru&ccedil;&otilde;es de cada CPU, bem como fatores como o
+n&uacute;mero de registradores e tamanho dos barramentos que
+transportam os dados entre os componentes.<br>
+</p>
+<h4>Simulador de Parte Operativa</h4>
+<p>Para ajudar a visualizar o comportamento da parte operativa da CPU,
+vamos usar um simulador. O <a
+ href="javascript:openIt('KandS/datapath.html',505,540);">Simulador de
+Parte Operativa da CPU</a> modela uma CPU simples contendo quatro
+registradores. Usando o simulador, voc&ecirc; pode seguir o fluxo dos
+dados a medida que eles trafegam pela parte operativa da CPU, a partir
+dos registradores para a ULA e de volta para os registradores. Para
+deixar as coisas simples, n&atilde;o &eacute; incluida uma Unidade de
+Controle expl&iacute;cita neste simulador. Ao inv&eacute;s disto, o
+usu&aacute;rio deve agir como a Unidade de Controle, selecionando os
+registradores de entrada, a fun&ccedil;&atilde;o da ULA e o registrador
+de sa&iacute;da clicando nos bot&otilde;es do simulador.</p>
+<p>As figuras 14.2 at&eacute; 14.5 demonstram o uso do simulador para
+somar dois n&uacute;meros - uma tarefa que pode ser realizada em um
+&uacute;nico ciclo de CPU.<br>
+</p>
+<ul>
+  <li>Este simulador usa caixas de texto para representar
+registradores, possibilitando ao usu&aacute;rio entrar com dados
+digitando nas caixas. Os bot&otilde;es, que permitem ao usu&aacute;rio
+especificar como os dados movem ao longo da parte operativa da CPU e
+que opera&ccedil;&otilde;es a ULA executa sobre os dados, s&atilde;o
+imagens que mudam quando o usu&aacute;rio clica nelas. Na figura 14.2,
+o usu&aacute;rio entrou os n&uacute;meros 43 e 296 nos registradores R0
+e R1, respectivamente. Depois de entrar estes valores, o usu&aacute;rio
+clicou no bot&atilde;o do barramento A para selecionar R0 e no
+bot&atilde;o do barramento B para selecionar R1. Isto far&aacute; com
+que os n&uacute;meros armazenados nestes dois registradores sejam
+transferidos atrav&eacute;s dos barramentos indicados para a ULA, a
+qual executar&aacute; uma opera&ccedil;&atilde;o sobre eles. Como o
+usu&aacute;rio posicionou o bot&atilde;o de opera&ccedil;&atilde;o da
+ULA para adi&ccedil;&atilde;o e o bot&atilde;o do barramento C para
+R2,a ULA far&aacute; a soma dos dois n;umero e o resultado ser&aacute;
+transferido atrav&eacute;s do barramento C para ser armzenado no
+registrador R2.<br>
+  </li>
+  <li>Depois de entrar com os ajustes desejados, o usu&aacute;rio
+inicia o ciclo de CPU no simulador clicando no bot&atilde;o rotulado
+Execute. A figura&nbsp; 14.3 mostra o estado da CPU a medida que os
+valores em R0 e R1 trafagam atrav&eacute;s dos barramentos A e B para a
+ULA. As setas que representam os barramentos piscam em vermelho e os
+n&uacute;meros sendo transferidos s&atilde;o mostrados em caixas de
+texto pr&oacute;ximas aos barrament</li>
+  <li>A figura 14.4 ilustra o estado da CPU depois que a ULA recebeu os
+n&uacute;meros e executou a opera&ccedil;&atilde;o especificada. Como o
+usu&aacute;rio colocou o bot&atilde;o de opera&ccedil;&atilde;o da ULA
+na posi&ccedil;&atilde;o da soma, a ULA soma os dois n&uacute;meros, 43
+e -296. O resultado -253 &eacute; enviado para fora da ULA
+atrav&eacute;s do barramento C.</li>
+  <li>Finalmente, a figura 14.5 mostra o resultado final do ciclo de
+CPU. Como o usu&aacute;rio colocou o bot&atilde;o do barramento C para
+a posi&ccedil;&atilde;o do registrador R2, o valor -253 &eacute;
+enviado atrav&eacute;s do barramento C e &eacute; armazenado no
+registrador R2.</li>
+</ul>
+<p style="text-align: center;">
+<img alt="Datapath simulator" src="14-datapath1.gif"><br>
+<b>Figure 14.2: Configura&ccedil;&atilde;o inicial do simulador.</b>
+</p>
+<p style="text-align: center;">
+<img alt="Datapath simulator" src="14-datapath2.gif"><br>
+<b>Figura 14.3: Dados movendo dos registradores para a ULA.</b>
+</p>
+<p style="text-align: center;">
+<img alt="Datapath simulator" src="14-datapath3.gif"><br>
+<b>Figura 14.4: Dados trafegando da ULA para os registradores.</b>
+</p>
+<p style="text-align: center;">
+<img alt="Datapath simulator" src="14-datapath4.gif"><br>
+<b>Figura 14.5: Resultado final do ciclo de CPU.</b>
+</p>
+<h4>CPU e Mem&oacute;ria Principal</h4>
+<p>Apesar da Parte Operativa da CPU descrever como um computador
+executa computa&ccedil;&otilde;es sobre dados armazenados em
+registradores, n&oacute;s ainda n&atilde;o explicamos como os dados
+entram nos registradores e como os resultados das
+opera&ccedil;&otilde;es da ULA s&atilde;o acessados fora da CPU. Estas
+duas tarefas envolvem conex&otilde;es entre a CPU e a mem&oacute;ria
+princiapl. Como visto no cap&iacute;tulo 1, todos os programas e dados
+ativos est&atilde;o armazenados na mem&oacute;ria principal de um
+computador. N&oacute;s podemos pensar da mem&oacute;ria principal como
+uma grande cole&ccedil;&atilde;o de posi&ccedil;&otilde;es de
+mem&oacute;ria, na qual cada posi&ccedil;&atilde;o &eacute;
+acess&iacute;vel atrav&eacute;s de um endere&ccedil;o. De mesma maneira
+que os endere&ccedil;os de uma rua (por exemplo, trist&atilde;o
+monteiro 590) permitem um carteiro encontrar um destinat&aacute;rio, um
+endere&ccedil;o de mem&oacute;ria (por exemplo, posi&ccedil;&atilde;o
+de mem&oacute;ria 31) permite a CPU encontrar e acessar um
+peda&ccedil;o espec&iacute;fico da mem&oacute;ria principal. Um
+barramento conecta a mem&oacute;ria principal com a CPU, permitindo ao
+computador copiar dados e instru&ccedil;&otilde;es em registradores e
+ent&atilde;o copiar os resultados das computa&ccedil;&otilde;es de
+volta para a mem&oacute;ria principal. A figura 14.6 ilustra a
+intera&ccedil;&atilde;o entre a mem&oacute;ria principal de um
+computador e a CPU; as setas escuras representam o fluxo de dados da
+parte operativa da CPU, enquanto as setas mais claras representam o
+barramento que conecta a mem&oacute;ria principal aos registradores. </p>
+<p style="text-align: center;"><img alt="CPU + Memory"
+ src="14-CPUMem.gif">
+<br>
+<b>Figura 14.6: Um barramento conecta a mem&oacute;ria principal
+&agrave; CPU</b>
+</p>
+<p><br>
+</p>
+<h4>Transferindo dados para e a partir da mem&oacute;ria principal</h4>
+<span style="font-weight: bold;"></span>
+<p>Enquanto um programa est&aacute; sendo executado, a Unidade de
+Controle processa as instru&ccedil;&otilde;es do programa e identifica
+que valores de dados ser&atilde;o necess&aacute;rios para realizar as
+tarefas especificadas.&nbsp; Os valores desejados s&atilde;o
+ent&atilde;o buscados a partir da mem&oacute;ria principal
+atrav&eacute;s do barramento da mem&oacute;ria principal, carregados em
+registradores e utilizados pelas opera&ccedil;&otilde;es da ULA.</p>
+<p><br>
+Como um exemplo concreto, imgine que voc&ecirc; tem um arquivo contendo
+1.000 n&uacute;meros e precisa computar a soma destes n&uacute;meros. O
+arquivo pode ser carregado na mem&oacute;ria principal - por exemplo,
+nas posi&ccedil;&otilde;es de mem&oacute;ria 500 at&eacute; 1499.
+Ent&atilde;o, a Unidade de Controle pode realizar os seguintes passos
+para somar estes n&uacute;meros e armazenar a soma resultante de volta
+na mem&oacute;ria.</p>
+<p></p>
+<ol>
+  <li>Initializar um dos registradores, por exemplo R0, com o valor 0.
+Este registrador ir&aacute; armazenar a soma&nbsp; total dos
+n&uacute;meros</li>
+  <li>Para cada n&uacute;mero armazenado nos endere&ccedil;os de
+mem&oacute;ria de 500 at&eacute; 1499:
+    <ol type="a">
+      <li>Copiar o n&uacute;mero da mem&oacute;ria principal para outro
+registrador, por exemplo R1. </li>
+      <li>Executar um ciclo atrav&eacute;s da parte operativa da CPU
+para somar R0 e R1 e armazenar o resultado de volta em R0. </li>
+    </ol>
+  </li>
+  <li>Quando todos os valores dos n&uacute;meros no arquivo tiverem
+sido processados, o valor em R0 ter&aacute; a soma total. Este valor
+pode ent&atilde;o ser copiado de volta para uma posi&ccedil;&atilde;o
+na mem&oacute;ria principal.</li>
+</ol>
+<p>Note que cada n&uacute;mero deve ser transferido em um registrador
+antes que ele possa ser acrescentado &agrave; soma total. Na
+pr&aacute;tica, transferir dados entre a mem&oacute;ria principal e a
+CPU ocorre em uma velocidade bem menor do que a de um ciclo de CPU.
+Isto &eacute; principalmente devido ao fato de que os sinais eletricos
+devem viajar por uma grande dist&acirc;ncia - por exemplo, a partir de
+um chip de RAM separado para o chip da CPU. No tempo que leva para os
+dados trafegarem pelo barramento da mem&oacute;ria principal e
+alcan&ccedil;ar os registradores, v&aacute;rios ciclos de CPU pode
+ocorrer. Os processadores modernos compensam este atraso com hardware
+especial que premite que v&aacute;rias instru&ccedil;&otilde;es sejam
+buscadas ao mesmo tempo. Ao buscar v&aacute;rias
+instru&ccedil;&otilde;es de antem&atilde;o, o processador pode
+come&ccedil;ar a lidar com uma pr&oacute;xima instru&ccedil;&atilde;o e
+executar computa&ccedil;&otilde;es &uacute;teis enquanto uma
+transfer&ecirc;ncia de dados anterior est&aacute; ainda em andamento.</p>
+<h4>Parte Operativa com simulador de mem&oacute;ria</h4>
+<p>Para ajudar a visualizar as rela&ccedil;&otilde;es entre a CPU e a
+mem&oacute;ria principal, o simulador da parte operativa da CPU foi
+acrescido com uma mem&oacute;ria principal. Este <a
+ href="javascript:openIt('KandS/dpandmem.html',800,560)">simulador
+estendido</a> inclui uma mem&oacute;ria principal que pode armazenar
+at&eacute; 32 n&uacute;meros, com endere&ccedil;os entre 0 e 31. Um
+novo barramento, rotulado Barramento da Mem&oacute;ria Principal,
+conecta a mem&oacute;ria principal com a CPU; este barramento permite
+que dados sejam copiados da mem&oacute;ria principal para os
+registradores, bem como permite que os resultados da ULA&nbsp; possam
+ser armazenados na mem&oacute;ria principal. Como no exemplo anterior,
+esta vers&atilde;o do simulador n&atilde;o possui uma Unidade de
+Controle expl&iacute;cita. O usu&aacute;rio deve trabalhar como se
+fosse a Unidade de Controle, selecionando os ajustes desejados no
+barramento da mem&oacute;ria principal para controlar o fluxo de dados.<br>
+<br>
+</p>
+<p>As figuras 14.7 at&eacute; 14.9 demonstram o uso do simulador para
+somar dois n&uacute;meros armazenados na mem&oacute;ria.
+</p>
+<p></p>
+<ul>
+  <li>Quando a CPU deve somar dois n&uacute;meros armazenados na
+mem&oacute;ria, o primeiro passo &eacute; copiar um dos n&uacute;meros
+para um registrador. Na figura 14.7, o usu&aacute;rio selecionou o
+primeiro n&uacute;mero a ser somado, naquele momento na
+posi&ccedil;&atilde;o de mem&oacute;ria 0, clicando no
+bot&atilde;o&nbsp; <tt>R/W</tt> pr&oacute;ximo &agrave;quela
+posi&ccedil;&atilde;o (<tt>R/W</tt> se refere ao fato de que o
+bot&atilde;o seleciona que posi&ccedil;&atilde;o&nbsp; da
+mem&oacute;ria ser&aacute; lida (Read) ou escrita (Written). O
+usu&aacute;rio tamb&eacute;m configurou as setas em torno do barramento
+da mem&oacute;ria principal para que elas conectem a mem&oacute;ria
+principal aos registradores. Note que este barramento pode mover dados
+entre a mem&oacute;ria principal e os registradores ou a partir da ULA
+para a mem&oacute;ria principal, dependendo como o usu&aacute;rio
+posiciona as chaves do barramento. O usu&aacute;rio pode abrir ou
+fechar estas chaves clicando nelas, efetivamente conectando ou
+desconenctando o barramento. Uma vez dentro da CPU, o barramento da
+mem&oacute;ria principal conecta-se ao barramento C, o qual armazena o
+n&uacute;mero no registrador R0 (pois o bot&atilde;o do barramento C
+est&aacute; posicionado para R0).</li>
+  <li>A figura 14.8 ilustra o pr&oacute;ximo passo no nosso exemplo, o
+qual envolve copiar o segundo n&uacute;mero para um registrador. Como o
+usu&aacute;rio escolheu o bot&atilde;o <tt>R/W</tt> pr&oacute;ximo
+&agrave; posi&ccedil;&atilde;o de mem&oacute;ria 1 e posicionou o
+bot&atilde;o do barramento C para R1, o conte&uacute;do da
+posi&ccedil;&atilde;o 1 ser&aacute; buscado e armazenado no registrador
+R1.
+  </li>
+  <li>A figura 14.9 mostra o ciclo de CPU durante o qual a ULA soma os
+conte&uacute;dos de R0 e R1. Note que os bot&otilde;es de ajuste do
+barramento A, do barramento B e da opera&ccedil;&atilde;o da ULA
+s&atilde;o os mesmo como os das figuras 14.3 through 14.6; isto
+&eacute; por conta dos dois exemplo envolverem a mesma tarefa de somar
+os n&uacute;meros em R0 e R1. Na figura 14.9, no entanto, as chaves do
+barramento da mem&oacute;ria principal est&atilde;o ajustadas para que
+o resultado da soma seja enviado para a mem&oacute;ria principal, ao
+inv&eacute;s de que seja enviado para os registradores.</li>
+</ul>
+<p style="text-align: center;">
+<img alt="Datapath+Memory simulator" src="14-dpandmem1.gif"><br>
+<b>Figure 14.7: Primeiro, 43 &eacute; carregado a partir da
+mem&oacute;ria em R0.</b>
+</p>
+<p style="text-align: center;">
+<img alt="Datapath+Memory simulator" src="14-dpandmem2.gif"><br>
+<b>Figure 14.8: Segundo, -296 &eacute; carregado a partir da
+mem&oacute;ria em R1.</b>
+</p>
+<p style="text-align: center;">
+<img alt="Datapath+Memory simulator" src="14-dpandmem3.gif"><br>
+<b>Figure 14.9: Finalmente, os valores s&atilde;o somados e a soma
+&eacute; armazenada de volta na mem&oacute;ria.</b>
+</p>
+<p>Duas oberva&ccedil;&otilde;es interessantes podem ser feitas em
+rela&ccedil;&atilde;o ao comportamento do simulador. Primeiro, o
+simulador precisa de mais tempo para copiar dados entre a
+mem&oacute;ria e a CPU do que ele precisa para executar um ciclo de
+CPU. Este atraso simula o efeito do tempos de acesso lentos associados
+com a mem&oacute;ria principal. Em um computador real, cerca de
+at&eacute; 10 ciclos de CPU podem ocorrer no tempo que leva para uma
+transfer&ecirc;ncia de dados entre a CPU e a mem&oacute;ria principal.
+A segunda observa&ccedil;&atilde;o &eacute; que, mesmo enquanto os
+dados est&atilde;o sendo buscados a partir da mem&oacute;ria, as
+opera&ccedil;&otilde;es ainda est&atilde;o sendo executadas na parte
+operativa da CPU. Por exemplo, na figura 14.8, o n&uacute;mero em R0
+(43) &eacute; enviado atrav&eacute;s dos barramentos A e B para a ULA,
+produzindo a soma 86. Isto pode parecer lixo, pois o resultado das
+opera&ccedil;&otilde;es da ULA &eacute; ignorado (devido ao barramento
+C est&aacute; desconectado). De maneira surpreeendente, isto reflete
+precisamente o funcionamento interno da CPU. &Eacute; mais eficiente
+para a CPU executar computa&ccedil;&otilde;es desnecess&aacute;rias
+enquanto dados est&atilde;o sendo transferidos para ou a partir da
+mem&oacute;ria do que adicionar circuitos extras para reconhecer se o
+barramento C estava desconectado.</p>
+<br>
+<h3>Computador com Programa Armazenado</h3>
+<p>Agora que discutimos sobre a mem&oacute;ria principal, estamos
+prontos para lidar com o &uacute;ltimo componente da CPU: uma Unidade
+de Controle totalmente funcional e autom&aacute;tica. Para entende o
+papel da Unidade de Controle, relembre as tarefas que voc&ecirc;
+realizou enquanto usava os simuladores. Quando voc&ecirc; experimentou
+com Simulador de Parte Operativa, voc&ecirc; definiu a
+computa&ccedil;&atilde;o que um ciclo de CPU deveria executar
+atrav&eacute;s da sele&ccedil;&atilde;o dos registradores e da
+opera&ccedil;&atilde;o da ULA via bot&otilde;es. No simulador da parte
+operativa e mem&oacute;ria principal, voc&ecirc; controlou o fluco de
+informa&ccedil;&atilde;o entre a parte operativa e mem&oacute;ria
+atrav&eacute;s de chaves e bot&otilde;es. A principal id&eacute;ia por
+tr&aacute;s de um computador com programa armazenado &eacute; que estas
+tarefas pode ser representadas por instru&ccedil;&otilde;es, armazenada
+na mem&oacute;ria principal junto com os dados e ent&atilde;o
+executadas pela Unidade de Controle.</p>
+<h4>Linguagens de M&aacute;quina</h4>
+<p>Uma linguagem de m&aacute;quina &eacute; um conjunto de
+instru&ccedil;&otilde;es correspondendo &agrave;s tarefas
+b&aacute;sicas que uma CPU pode realizar. Em ess&ecirc;ncia, cada
+instru&ccedil;&atilde;o de linguagem de m&aacute;quina especifica a
+configura&ccedil;&atilde;o dos componentes de hardware que define uma
+particular computa&ccedil;&atilde;o em um ciclo da CPU. Assim,
+n&oacute;s devemos definir instru&ccedil;&otilde;es em linguagem de
+m&aacute;quina para nosso simulador, enumerando todos os ajustes
+f&iacute;sicos dos bot&otilde;es e chaves. Por exemplo,</p>
+<p><xmp> Barramento A = R0 Chave da ULA = fechada Barramento B = R1
+Chave MMIn = aberta ALU = A+B Chave MMOut = aberta Barramento C = R2
+Chave C = fechada
+</xmp></p>
+<p>definiria uma configura&ccedil;&atilde;o na qual os conte&uacute;dos
+de R0 e R1 seriam somados e o resultado armazenado de volta em R2. Esta
+nota&ccedil;&atilde;o pode ser suficiente para controlar o
+comportamento de uma m&aacute;quina muito simples, tal como uma
+representando nosso simulador; no entanto, CPUs nop mundo real possuem
+um grande n&uacute;mero de componentes f&iacute;sicos e especificar o
+estado de todas estas partes durante cada ciclo de CPU seria
+imposs&iacute;vel. Al&eacute;m disso, como as isntru&ccedil;&otilde;es
+s&atilde;o armazenadas na mem&oacute;ria junto com os dados, as
+instru&ccedil;&otilde;es devem ser representadas como padr&otilde;es de
+bits.<br>
+</p>
+<p>A figura 14.10 descreve uma linguagem de m&aacute;quina simples que
+foi projetada para nosso simulador. Como as posi&ccedil;&otilde;es da
+mem&oacute;ria principal em nosso simulador podem caber no
+m&aacute;ximo 16 bits, nossa linguagem representa cada
+isntru&ccedil;&atilde;o como um padr&atilde;o de 16 bits. Os primeiros
+bits de cada padr&atilde;o indicam o tipo de tarefa que a CPU dem
+realizar, enquanto os bits seguintes indicam os registradores e/ou
+posi&ccedil;&otilde;es de mem&oacute;ria envolvidas na tarefa. Por
+exemplo, todas as instru&ccedil;&otilde;es que envolvem soma de
+conte&uacute;do de dois registradores come&ccedil;am com o
+padr&atilde;o de bits 1010000100. Os seis bits finais da
+isntru&ccedil;&atilde;o representam o registrador destino em
+bin&aacute;rio (isto &eacute;, o registrador onde o resultado
+ser&aacute; armazenado) e os registradores fonte (isto &eacute;, os
+registradores cujos conte&uacute;dos ser&atilde;o somados pela ULA),
+respectivamente. Por exemplo, suponha que voc&ecirc; quer somar os
+conte&uacute;dos de R0 e R1 e ent&atilde;o armazenar o resultado em R2
+- isto &eacute; R2 = R0 + R1. Os padr&otilde;es de bits para R2 (2 = 10
+em bin&aacute;rio), R0 (0 = 00 em bin&aacute;rio) e R1 (1 = 01 em
+bin&aacute;rio) devem ser acrescentados no final do padr&atilde;o de
+bits, produzindo a instru&ccedil;&atilde;o em linguagem de
+m&aacute;quina 1010000100100001. De maneira semelhante, se a
+inten&ccedil;&atilde;o &eacute; fazer R3 = R0 + R1, ent&atilde;o o
+padr&atilde;o de bits para R3 (3 = 11 em bin&aacute;rio) deve
+substituir o de R2: 1010000100110001. </p>
+<p></p>
+<center>
+<table width="80%" border="1">
+  <tbody>
+    <tr>
+      <th>Opera&ccedil;&atilde;o </th>
+      <th>Instru&ccedil;&atilde;o em Linguagem de M&aacute;quina </th>
+      <th>Exemplo
+      </th>
+    </tr>
+    <tr>
+      <td>somar conte&uacute;do de dois registradores, armazenar
+resultado em outro regsitrador<br>
+      <br>
+p.ex., R0 = R1 + R2 </td>
+      <td>1010000100 RR RR RR </td>
+      <td>1010000100 00 01 10 <br>
+      <br>
+somar&aacute; os conte&uacute;dos de R1 (01) e R2 (10), armazenando
+resultado em R0 (00)
+      </td>
+    </tr>
+    <tr>
+      <td>subtrair conte&uacute;do de dois registradores, armazenar
+resultado em outro regsitrador<br>
+p.ex., R0 = R1 - R2 </td>
+      <td>1010001000 RR RR RR </td>
+      <td>1010001000 00 01 10 <br>
+      <br>
+pega o conte&uacute;do de R1 (01), subtrai R2 (10), e aramzena
+resultado em R0 (00)
+      </td>
+    </tr>
+    <tr>
+      <td>carregar conte&uacute;do da posi&ccedil;&atilde;o de
+mem&oacute;ria em um registrador<br>
+      <br>
+p.ex., R3 = M[5] </td>
+      <td>100000010 RR MMMMM </td>
+      <td>100000010 11 00101 <br>
+      <br>
+carrega conte&uacute;do da posi&ccedil;&atilde;o de mem&oacute;ria 5
+(00011) em R3 (11)
+      </td>
+    </tr>
+    <tr>
+      <td>armazena conte&uacute;do de&nbsp; registrador em uma
+posi&ccedil;&atilde;o de mem&oacute;ria<br>
+      <br>
+p.ex., M[5] = R3 </td>
+      <td>100000100 RR MMMMM </td>
+      <td>100000100 11 00101 <br>
+      <br>
+armazena na posi&ccedil;&atilde;o de mem&oacute;ria 7 (00101) o
+conte&uacute;do de R3 (11)
+      </td>
+    </tr>
+    <tr>
+      <td>move conte&uacute;do de um registrador para outro registrador
+      <br>
+      <br>
+p.ex., R1 = R0 </td>
+      <td>100100010000 RR RR </td>
+      <td>100100010000 01 00 <br>
+      <br>
+move conte&uacute;do de R0 (00) para R1 (01)
+      </td>
+    </tr>
+    <tr>
+      <td>parar a m&aacute;quina<br>
+      </td>
+      <td>1111111111111111 </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<b>Figure 14.10: Linguagem de m&aacute;quina para simulador de
+computador</b>
+</center>
+<p>As primeiras duas instru&ccedil;&otilde;es da linguagem de
+m&aacute;quina da figura 14.10 correspondem &agrave;s tarefas que os
+usu&aacute;rios podem realizar com o simulador de parte operativa da
+CPU - isto &eacute;, selecionar uma opera&ccedil;&atilde;o da ULA e os
+registradores a serem operados no ciclo de CPU. As tr&ecirc;s
+instru&ccedil;&otilde;es seguintes correspondem &agrave;s tarefas que
+os usu&aacute;rios podem realizar com a vers&atilde;o do simulador para
+parte operativa com mem&oacute;ria - isto &eacute;, controlar o fluxo
+de informa&ccedil;&atilde;o entre a mem&oacute;ria principal e a parte
+operativa. A &uacute;ltima instru&ccedil;&atilde;o, parar (HALT),
+indica para a Unidade de Controle quando uma sequencia de
+isntru&ccedil;&otilde;es termina. &Eacute; claro que em uma CPU real se
+tem muito mais instru&ccedil;&otilde;es do que estas. Por exemplo, se
+uma CPU executa um programa que inclui desvios condicionais (por
+exemplo, comandos se ... ent&atilde;o e repeti&ccedil;&otilde;es), sua
+linguagem de m&aacute;quina deve fornecer isntru&ccedil;&otilde;es de
+desvio que permitam a CPU pular de uma instru&ccedil;&atilde;o para
+outra. No entanto, o conjunto de instru&ccedil;&otilde;es limitado da
+figura 14.10 &eacute; suficiente para demonstrar o funcionamento de uma
+CPU b&aacute;sica e sua Unidade de Controle.</p>
+<br>
+<h4>Unidade de Controle<br>
+</h4>
+<p>Uma vez que uma linguagem uniforme para uma dada CPU &eacute;
+estabelecida, as instru&ccedil;&otilde;es podem ser armazenadas na
+mem&oacute;ria juntamente com os dados. &Eacute; ent&atilde;o
+fun&ccedil;&atilde;o da Unidade de Controle obter cada
+instru&ccedil;&atilde;o em linguagem de m&aacute;quina a partir da
+mem&oacute;ria, interpretar seu significado, executar o ciclo de CPU
+correspondente e ent&atilde;o passar para a pr&oacute;xima
+instru&ccedil;&atilde;o. Como instru&ccedil;&otilde;es e dados
+est&atilde;o armazenados na mesma mem&oacute;ria, a Unidade de Controle
+deve ser capaz de reconhecer onde uma sequ&ecirc;ncia de
+instru&ccedil;&otilde;es come&ccedil;a e termina. Em computadores
+reais, isto &eacute; usualmente controlado pelo sistema operacional, o
+qual mant&eacute;m uma lista de cada programa em mem&oacute;ria e sua
+localiza&ccedil;&atilde;o. Por simplicidade, nosso simulador assume que
+a primeira instru&ccedil;&atilde;o se encontra na posi&ccedil;&atilde;o
+0 da mem&oacute;ria. O final da sequ&ecirc;ncia de
+instru&ccedil;&otilde;es &eacute; definida explicitamente pelo
+padr&atilde;o de bits "parar" (HALT).<br>
+</p>
+<p>Para ordenar a execu&ccedil;&atilde;o de uma sequ&ecirc;ncia de
+isntru&ccedil;&otilde;es, a Unidade de Controle mant&eacute;m&nbsp;
+um&nbsp; Contador de Programa (Program Counter - PC) , que armazena o
+endere&ccedil;o da pr&oacute;xima instru&ccedil;&atilde;o a ser
+executada. Como n&oacute;s assumimos que todo programa come&ccedil;a no
+endere&ccedil;o 0, o valor do PC &eacute; inicializado com o valor 0
+antes de come&ccedil;ar a execu&ccedil;&atilde;o do programa. Quando a
+Unidade de Controle precisa buscar e executar uma
+instru&ccedil;&atilde;o, ela acessa o PC e ent&atilde;o obt&eacute;m a
+instru&ccedil;&atilde;o armazenada na correspondente
+posi&ccedil;&atilde;o de mem&oacute;ria. Depois que a Unidade de
+Controle busca a instru&ccedil;&atilde;o, o PC &eacute; automaticamente
+incrementado, assim ele identifica a pr&oacute;xima
+instru&ccedil;&atilde;o na sequ&ecirc;ncia.</p>
+<p>Os passos realizados pela Unidade de Controle podem ser definidos
+com um algoritmo geral, no qual as instru&ccedil;&otilde;es s&atilde;o
+repetidamente buscadas e executadas:<br>
+</p>
+<blockquote><u>Algoritmo de busca e execu&ccedil;&atilde;o implementado
+pela Unidade de Controle:</u>
+  <ol>
+    <li>Inicializa PC = 0.
+    </li>
+    <li>Busca a instru&ccedil;&atilde;o armazenada na
+posi&ccedil;&atilde;o de mem&oacute;ria indicada pelo conte&uacute;do
+do PC, e&nbsp; faz PC = PC + 1.
+    </li>
+    <li>Enquanto a instru&ccedil;&atilde;o corrente n&atilde;o for a
+instru&ccedil;&atilde;o "parar" (HALT):
+      <ol type="a">
+        <li>Decodifica a instru&ccedil;&atilde;o - isto &eacute;,
+identifica a instru&ccedil;&atilde;o e determina as
+configura&ccedil;&otilde;es do hardware da CPU que devem ser usadas
+para executar a instru&ccedil;&atilde;o. </li>
+        <li>Configura o hardware da CPU para corresponderem ao indicado
+pela instru&ccedil;&atilde;o. </li>
+        <li>Executa um ciclo de parte operativa da CPU. </li>
+        <li>Quando o ciclo se completa, busca a pr&oacute;xima
+instru&ccedil;&atilde;o a partir da posi&ccedil;&atilde;o indicada pelo
+conte&uacute;do do PC, e faz PC = PC + 1.
+        </li>
+      </ol>
+    </li>
+  </ol>
+</blockquote>
+<p>Por exemplo, suponha que a mem&oacute;ria principal cont&eacute;m o
+programa e os dados mostrados na figura 14.11<br>
+</p>
+<p></p>
+<center>
+<table border="1">
+  <tbody>
+    <tr>
+      <td><xmp>
+0: 1000000100000101 // carrega posicao de memoria 5 em R0
+1: 1000000100100110 // carrega posicao de memoria 6 em R1
+2: 1010000100100001 // adiciona R0 e R1, armazena em R2
+3: 1000001001000111 // armazena R2 na posicao de memoria 7
+4: 1111111111111111 // parada
+5: 0000000000001001 // dado a ser somado: 9
+6: 0000000000000001 // dado a ser somado: 1
+7: 0000000000000000 // posicao onde a soma eh armazenada
+      </xmp></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<b>Figura 14.11: Programa em linguagem de m&aacute;quina para somar
+dois n&uacute;meros na mem&oacute;ria.</b>
+</center>
+<p>As primeiras cinco posi&ccedil;&otilde;es de mem&oacute;ria
+(endere&ccedil;os de 0 at&eacute; 4) cont&eacute;m
+isntru&ccedil;&otilde;es em linguagem de m&aacute;quina para somar dois
+n&uacute;meros e armazenar sua soma de volta na mem&oacute;ria. Os
+n&uacute;meros podem a serem somados s&atilde;o armazenados na
+posi&ccedil;&otilde;es de mem&oacute;ria 5 e 6. Para executar este
+programa, a Unidade de Controle&nbsp; deve seguir os seguintes passos: <br>
+</p>
+<ol>
+  <li>Primeiro, o contador de programa &eacute; inicializado: PC = 0.
+  </li>
+  <li>A instru&ccedil;&atilde;o na posi&ccedil;&atilde;o de
+mem&oacute;ria 0 (correspondente ao valor atual do PC) &eacute; buscada
+e o PC &eacute; incrementado: PC = 0 + 1 = 1.
+  </li>
+  <li>Como esta instru&ccedil;&atilde;o (1000000100000101) n&atilde;o
+&eacute; uma instru&ccedil;&atilde;o HALT, ela &eacute; decodificada: o
+hardware da CPU &eacute; configurado de modo que o conte&uacute;do da
+posi&ccedil;&atilde;o de mem&oacute;ria 5 seja carregado no
+registrador&nbsp; R0 e um ciclo de CPU &eacute; executado.
+  </li>
+  <li>A pr&oacute;xima instru&ccedil;&atilde;o, na
+posi&ccedil;&atilde;o de mem&oacute;ria 1 (correspondente ao valor
+atual do PC) &eacute; buscada e o PC &eacute; incrementado: PC = 1 + 1
+= 2.
+  </li>
+  <li>Como esta instru&ccedil;&atilde;o (1000000100100110) n&atilde;o
+&eacute; uma instru&ccedil;&atilde;o HALT, ela &eacute; decodificada: o
+hardware da CPU &eacute; configurado de modo que o conte&uacute;do da
+posi&ccedil;&atilde;o de mem&oacute;ria 6 seja carregado no
+registrador&nbsp; R1 e um ciclo de CPU &eacute; executado..
+  </li>
+  <li>A pr&oacute;xima instru&ccedil;&atilde;o, na
+posi&ccedil;&atilde;o de mem&oacute;ria 2 (correspondente ao valor
+atual do PC) &eacute; buscada e o PC &eacute; incremenetado: PC = 2 + 1
+= 3.
+  </li>
+  <li>Como esta instru&ccedil;&atilde;o (1010000100100001) n&atilde;o
+&eacute; uma instru&ccedil;&atilde;o HALT, ela &eacute; decodificada: o
+hardware da CPU &eacute; configurado de modo que o conte&uacute;do do
+registrador R0 &eacute; somado ao conte&uacute;do do registrador R1 e o
+resultado &eacute; armazenado no registrador R2 e um ciclo de CPU
+&eacute; executado.</li>
+  <li>A pr&oacute;xima instru&ccedil;&atilde;o, na
+posi&ccedil;&atilde;o de mem&oacute;ria 3 (correspondente ao valor
+atual do PC) &eacute; buscada e o PC &eacute; incrementado: PC = 3 + 1
+= 4.
+  </li>
+  <li>Como esta instru&ccedil;&atilde;o (1000001001000111) n&atilde;o
+&eacute; uma instru&ccedil;&atilde;o HALT, ela &eacute; decodificada: o
+hardware da CPU &eacute; configurado de modo que o conte&uacute;do do
+registrador R2 seja armazenado na posi&ccedil;&atilde;o de
+mem&oacute;ria 7 e um ciclo de CPU &eacute; executado.</li>
+  <li>A pr&oacute;xima instru&ccedil;&atilde;o, na
+posi&ccedil;&atilde;o de mem&oacute;ria 4 (correspondente ao valor
+atual do PC) &eacute; buscada e o PC &eacute; incrementado: PC = 4 + 1
+= 5.
+  </li>
+  <li>Como esta instru&ccedil;&atilde;o (1111111111111111) &eacute; uma
+instru&ccedil;&atilde;o HALT, a Unidade de Controle reconhece o fim do
+programa e para a execu&ccedil;&atilde;o.
+  </li>
+</ol>
+<h4>Simulador do computador com programa armazenado</h4>
+<p>O&nbsp; <a href="javascript:openIt('KandS/computer.html',800,560)">Simulador
+do computador com programa armazenado</a> modela o comportamento de um
+computador com programa armazenado completo. Instru&ccedil;&otilde;es e
+dados podem ser entrados na mem&oacute;ria, assumindo-se que a primeira
+instru&ccedil;&atilde;o deve ser sempre colocada na
+posi&ccedil;&atilde;o 0 da mem&oacute;ria. A Unidade de Controle
+&eacute; respons&aacute;vel pela busca e interpreta&ccedil;&atilde;o de
+instru&ccedil;&otilde;es em linguagem de m&aacute;quina, bem como
+realizar as tarefas especificadas por estas isntru&ccedil;&otilde;es.<br>
+</p>
+<p>O simulador cont&eacute;m v&aacute;rias caixas de
+exibi&ccedil;&atilde;o para ajudar os usu&aacute;rios a acompanhar o
+funcionamento interno da Unidade de Controle. Como descrito na
+se&ccedil;&atilde;o anterior, o contador de programa indica o
+endere&ccedil;o da pr&oacute;xima instru&ccedil;&atilde;o a executada.
+Al&eacute;m do PC, a CPU mant&eacute;m um Registrador de
+Instru&ccedil;&atilde;o (Instruction Register - RI) que sempre
+cont&eacute;m a instru&ccedil;&atilde;o que est&aacute; sendo executada
+no momento pela CPU. O registrador IR &eacute; mostrado pelo simulador
+como uma caixa de texto adicional. Acima destas caixas, o simulador
+mostra os bot&otilde;es e chaves definidos pela isntru&ccedil;&atilde;o
+corrente - isto torna a correspond&ecirc;ncia entre a
+instru&ccedil;&atilde;o em linguagem de m&aacute;quina e os ajustes nos
+bot&otilde;es e chaves mais&nbsp; claro. Os valores dos bot&otilde;es
+s&atilde;o especificados em bin&aacute;rio: 00 representa o
+bot&atilde;o&nbsp; posicionado&nbsp; para cima, 01 representa o
+bot&atilde;o posicionado para a direita, 10 representa o bot&atilde;o
+posicionado para baixo e 11 representa o bot&atilde;o posicionado para
+esquerda. Os valores da chaves tamb&eacute;m s&atilde;o escritos em
+bin&aacute;rios, com um bit 1 representando a chave fechada e 0&nbsp;
+indicando a chave aberta.<br>
+&nbsp;<br>
+</p>
+<p>As figuras de 14.12 at&eacute; 14.17 demonstram o uso do simulador
+para executar o exemplo do programa em linguagem de m&aacute;quina da
+figura 14.11.<br>
+</p>
+<p></p>
+<ul>
+  <li>A figura 14.12 mostra o estado inicial do simulador. As
+instru&ccedil;&otilde;es em linguagem de m&aacute;quinas s&atilde;o
+carregadas na mem&oacute;ria principal, come&ccedil;ando do
+endere&ccedil;o 0. Os dados necess&aacute;rios para executar as
+instru&ccedil;&otilde;es tamb&eacute;m&nbsp; s&atilde;o armazenados na
+mem&oacute;ria, nos endere&ccedil;os 5 e 6, imediatamente depois da
+&uacute;ltima instru&ccedil;&atilde;o. Na Unidade de Controle, o
+contador de programa (PC) &eacute; inicializado com 0, assim a
+instru&ccedil;&atilde;o 0 ser&aacute; a primeira a ser carregada e
+executada.<br>
+  </li>
+</ul>
+<p style="text-align: center;">
+<img alt="Computer simulator" src="14-computer1.gif"><br>
+<b>Figura 14.12: Estado inicial do simulador, com programa armazenado
+na mem&oacute;ria principal.</b>
+</p>
+<p style="text-align: center;">
+<img alt="Computer simulator" src="14-computer2.gif"><br>
+<b>Figure 14.13: Simulador depois da primeira instru&ccedil;&atilde;o
+ter sido executada (R0 = MM5).</b>
+</p>
+<p style="text-align: center;">
+<img alt="Computer simulator" src="14-computer3.gif"><br>
+<b>Figure 14.14: Simulador depois da segunda instru&ccedil;&atilde;o
+ter sido executada (R1 = MM6).</b>
+</p>
+<p style="text-align: center;">
+<img alt="Computer simulator" src="14-computer1.gif"><br>
+<b>Figure 14.15: Simulador depois da terceira instru&ccedil;&atilde;o
+ter sido executada (R2 = R0 + R1).</b>
+</p>
+<p style="text-align: center;">
+<img alt="Computer simulator" src="14-computer2.gif"><br>
+<b>Figure 14.16: Simulador depois do quarto comando ter sido executado
+(MM7 = R2).</b>
+</p>
+<p style="text-align: center;">
+<img alt="Computer simulator" src="14-computer3.gif"><br>
+<b>Figure 14.17: Simulador depois do quinto comando ter sido executado
+(HALT).</b>
+</p>
+<p>O simulador &eacute; projetado de maneira que o usu&aacute;rio possa
+entrar valores na mem&oacute;ria principal em decimal ou em
+bin&aacute;rio. Por padr&atilde;o, os valores entrados pelo
+usu&aacute;rio s&atilde;o assumidos estarem em decimal. No entanto, o
+usu&aacute;rio pode sempre selecionar 2 a partir da caixa <tt>View As</tt>
+a esquerda da posi&ccedil;&atilde;o de mem&oacute;ria para ver o
+conte&uacute;do em bin&aacute;rio. Antes de entrar uma
+instru&ccedil;&atilde;o em linguagem de m&aacute;quina em uma
+c&eacute;lula de mem&oacute;ria, o usu&aacute;rio deve primeiro
+selecionar 2 ta partir da caixa <tt>View As</tt> pois as
+instru&ccedil;&otilde;es em linguagem de m&aacute;quina s&atilde;o
+representadas em bin&aacute;rio.<br>
+<br>
+</p>
+<h4>A fun&ccedil;&atilde;o dos dispositivos de Entrada/Sa&iacute;da</h4>
+<p>Para completar nossa descri&ccedil;&atilde;o do computador com
+programa armazenado, n&oacute;s devemos pelo menos discutir brevemente
+a fun&ccedil;&atilde;o dos dispositivos de entrada/sa&iacute;da. Os
+dispositivos de entrada tais como teclados, mouses e digitalizadores
+permitem o usu&aacute;rio entrar dados e instru&ccedil;&otilde;es para
+o computador, que s&atilde;o ent&atilde;o armazenados na mem&oacute;ria
+e acessados pela CPU. Da mesma maneira, os dispositivos de sa&iacute;da
+tais como tela, altofalantes e impressoras permitem ao usu&aacute;rio
+acessar os resultados das computa&ccedil;&otilde;es que est&atilde;o
+armazenados na mem&oacute;ria.</p>
+<p>Nos computadores projetados para executar um programa de cada vez,
+tais como os primeiros computadores program&aacute;veis da
+d&eacute;cada de 1950 e mesmo os primeiros computadores pessoais da
+d&eacute;cada de 1970, a intera&ccedil;&atilde;o com o us&aacute;rio
+era direta e sem muitas complica&ccedil;&otilde;es. O usu&aacute;rio
+entra instru&ccedil;&otilde;es de programas e dados diretamente nas
+posi&ccedil;&otilde;es da mem&oacute;ria principal usando dispositivos
+de entrada tais como teclados ou leitores de fitas. Ent&atilde;o
+apertando um bot&atilde;o, virando uma chave ou entrando um comando
+espec&iacute;fico, o usu&aacute;rio mandava a CPU busca e executar as
+instru&ccedil;&otilde;es do programa a partir da mem&oacute;ria. O
+us&aacute;rio pode ent&atilde;o observar os resultados da
+computa&ccedil;&atilde;o exibindo o conte&uacute;do da mem&oacute;ria
+em uma tela ou o enviando para uma impressora. Este processo &eacute;
+modelado por nosso simulador, no qual o usu&aacute;rio entra
+diretamente com isntru&ccedil;&otilde;es e dados nas caixas da
+mem&oacute;ria principal e ent&atilde;o inicia a execu&ccedil;&atilde;o
+clicando em uma bot&atilde;o. Por outro lado, a maioria dos
+computadores modernos permitem que v&aacute;riosprogramas sejam
+carregados na mem&oacute;ria e sejam executados simultaneamente. Em
+tais computadores, o sistema operacional deve atuar, recebendo os dados
+e instru&ccedil;&otilde;es do usu&aacute;rio, armazenando na
+mem&oacute;ria e indicando suas posi&ccedil;&otilde;es na
+mem&oacute;ria para a CPU.</p>
+<p></p>
+<hr>
+<h3>Perguntas para revis&atilde;o</h3>
+<ol>
+  <li>Indique as tr&ecirc;s subunidades da CPU e descreva a
+fun&ccedil;&atilde;o de cada uma na execu&ccedil;&atilde;o das
+computa&ccedil;&otilde;es.</li>
+  <li>O que &eacute; a Parte Operativa da CPU? Qual a
+rela&ccedil;&atilde;o que existe entre a Parte Operativa e a velocidade
+da CPU?</li>
+  <li>Considere dois sistemas de computa&ccedil;&atilde;o que
+s&atilde;o id&ecirc;nticos exceto por suas CPUs. O sistema 1
+cont&eacute;m um Pentium 4 a 1,8 GHz, enquanto o sistema 2
+cont&eacute;m um PowerPC a 1,8 GHz.&nbsp; Estes dois sistemas sempre
+ir&atilde;o precisar da mesma quantidade de tempo para realizar um dado
+programa? Justifique sua resposta.</li>
+  <li>Considere as seguintes tarefas: (1) somar 100 n&uacute;meros
+armazenados na mem&oacute;ria principal e (2) somar um n&uacute;mero a
+ele mesmo 100 vezes. Apesar de ambos os programas precisarem de 100
+adi&ccedil;&otilde;es, o segundo poder&aacute; ser executado muito mais
+rapidamente do que o primeiro? Por que?</li>
+  <li>As linguagens de m&aacute;quina s&atilde;o espec&iacute;ficas de
+uma dada m&aacute;quina, o que significa que cada tipo de computador
+tem sua pr&oacute;pria linguagem de m&aacute;quina. Explique por que
+isto acontece.</li>
+  <li>Na Unidade de Controle, qual a fun&ccedil;&atilde;o do Contador
+de Programa (PC)? Ou seja, como o PC &eacute; usado na busca e
+execu&ccedil;&atilde;o das isntru&ccedil;&otilde;es?</li>
+</ol>
+</body>
+</html>

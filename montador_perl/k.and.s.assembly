@@ -1,0 +1,212 @@
+#!/usr/bin/perl 
+use Getopt::Long;
+#**********************************************************************
+# This script will parse the assembly language and generate hex value
+
+#recovering user, hostname and current dir
+$user = getlogin();
+#$host = `hostname`;
+#$currentdir = `pwd`;
+
+#recovering local date/time
+@months = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
+@weekDays = qw(Sun Mon Tue Wed Thu Fri Sat Sun);
+($second, $minute, $hour, $dayOfMonth, $month, $yearOffset, $dayOfWeek, $dayOfYear, $daylightSavings) = localtime();
+$year = 1900 + $yearOffset;
+$theDate = "$weekDays[$dayOfWeek] $months[$month] $dayOfMonth, $year";
+$theTime = "$hour:$minute:$second";
+
+my @input_file_names;
+
+sub print_header()
+{
+  my ($html, $run) = @_;
+  print $html "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+  print $html "  <div id=\"run\">\n";
+  print $html "  Run by <span>$user</span> on host <span>$host</span><br />\n";
+  print $html "  Date <span>$theDate</span>, Time <span>$theTime</span><br />\n";
+  print $html "  Working directory is <span>$currentdir</span><br />\n";
+  print $html "  </div>\n";
+  print $html "  <hr />\n";
+  print $html "  </div>\n";
+}
+
+sub usage
+{
+  print "\nUsage: k.and.s.assembler [--help] [--output file_name] --input file.asm\n\n";
+  print "  --help|-h      :  Print this help message\n";
+  print "  --output|-o    :  HTML output file to be generated. Default value is \"cover.html\"\n";
+  print "  --input|-i     :  A text file containing the K and S assembly language\n";
+  print "\n";
+  exit;
+}
+
+sub check_value()
+{
+  my ($mem, $comm, $line, $addr) = @_;
+  if (($mem eq "") || ( $mem !~ /^[+-]?\d+$/ ) || ( $mem > 65535 ) || ($mem < -32768))
+  {
+    print "Warning: You did not provide a valid memory address at line $line in command $comm\n";
+    print "         Memory will be set to zero at address $addr\n";
+    $mem = 0;
+  }
+  $mem = 0x10000 + $mem if ($mem < 0); ## making complement to keep positive values only
+  return $mem;
+}
+
+sub check_addr_mem()
+{
+  my ($mem, $comm, $line) = @_;
+  if (($mem eq "") || ( $mem !~ /^\d+$/ ) || ( $mem > 31 ))
+  {
+    print "Warning: You did not provide a valid value for memory at line $line in command $comm\n";
+    print "         Using address 0 to $comm at line $line\n";
+    $mem = 0;
+  }
+  return $mem;
+}
+
+sub check_reg()
+{
+  my ($reg, $comm, $line) = @_;
+  $res = 0;
+  if (lc($reg) !~ /r[0123]/)
+  {
+    print "Warning: You did not provid a valid register at line $line in command $comm\n";
+    print "         R0 will be used instead.\n";
+  } else {
+    $reg =~ s/[rR]//;
+    $res = $reg;
+    print "***DBG register $res\n" if ($debug);
+  }
+  return $res;
+}
+
+
+sub process_asm()
+{
+  my ($file, $hex) = @_;
+  my @args;
+  my $result;
+  my $mem;
+  my $line = 0;
+  my $line_file = 0;
+  print "*** DBG: Parsing file $file\n" if ($debug);
+  while (<$file>) 
+  {
+    $line_file = $line_file + 1;
+    ($command, $comment) = split(/;/);
+    chomp($command);
+    chomp($comment);
+    $command =~ s/^\s+//;
+    $command =~ s/\s+/ /;
+
+    if ($command eq "")
+    {
+      if ($line_file < 3) {
+        print $hex "; $comment\n";
+      }
+      next;
+    }
+
+    print "*** DBG processing command $command\n" if ($debug);
+    @args = split(/ +/, $command);
+    $result = 0;
+    $comm = lc($args[0]);
+    if ($comm eq "mem") {
+      print "line $line MEM $args[1]\n" if ($debug);
+      $result = &check_value($args[1], "MEM", $line_file, $line);
+    } elsif ($comm eq "nop") {
+      print "line: $line NOP\n" if ($debug);
+    } elsif ($comm eq "halt") {
+      print "line: $line HALT\n" if ($debug);
+      $result = 0xFFFF; ## FFFFh
+    } elsif ($comm eq "bneg") {
+      print "line $line BNEG $args[1]\n" if ($debug);
+      $result = 0x0300 + &check_addr_mem($args[1], "BNEG", $line_file);
+    } elsif ($comm eq "bzero") {
+      print "line $line BZERO $args[1]\n" if ($debug);
+      $result = 0x0200 + &check_addr_mem($args[1], "BZERO", $line_file);
+    } elsif ($comm eq "branch") {
+      print "line $line BRANCH $args[1]\n" if ($debug);
+      $result = 0x0100 + &check_addr_mem($args[1], "BRANCH", $line_file);
+    } elsif ($comm eq "move") {
+      print "line $line MOVE $args[1] $args[2]\n" if ($debug);
+      $result = 0x9100 + &check_reg($args[1], "MOVE", $line_file)*4 + &check_reg($args[2], "MOVE", $line_file);
+    } elsif ($comm eq "load") {
+      print "line $line LOAD $args[1] $args[2]\n" if ($debug);
+      $result = 0x8100 + (&check_reg($args[1]) * 32) + &check_addr_mem($args[2], "LOAD", $line_file);
+    } elsif ($comm eq "store") {        
+      print "line $line STORE $args[1] $args[2]\n" if ($debug);
+      $result = 0x8200 + &check_reg($args[2])*32 + &check_addr_mem($args[1], "STORE", $line_file);
+    } elsif ($comm eq "add") {        
+      print "line $line ADD $args[1] $args[2] $args[3]\n" if ($debug);
+      $result = 0xA100 + &check_reg($args[1], "ADD", $line_file)*16 + &check_reg($args[2], "ADD", $line_file)*4 + &check_reg($args[3], "ADD", $line_file);
+    } elsif ($comm eq "sub") {        
+      print "line $line SUB $args[1] $args[2] $args[3]\n" if ($debug);
+      $result = 0xA200 + &check_reg($args[1], "SUB", $line_file)*16 + &check_reg($args[2], "SUB", $line_file)*4 + &check_reg($args[3], "SUB", $line_file);
+    } elsif ($comm eq "and") {        
+      print "line $line AND $args[1] $args[2] $args[3]\n" if ($debug);
+      $result = 0xA300 + &check_reg($args[1], "AND", $line_file)*16 + &check_reg($args[2], "AND", $line_file)*4 + &check_reg($args[3], "AND", $line_file);
+    } elsif ($comm eq "or") {        
+      print "line $line OR $args[1] $args[2] $args[3]\n" if ($debug);
+      $result = 0xA400 + &check_reg($args[1], "OR", $line_file)*16 + &check_reg($args[2], "OR", $line_file)*4 + &check_reg($args[3], "OR", $line_file);
+    } else {
+      print "Warning: Invalid command at line $line_file \"$command\"\n";
+      print "         Memory will set to zero at address $line\n"; 
+    }
+
+    if ($line < 32)
+    {
+      printf $hex "%04X\n", $result;
+
+      printf "%04X\n", $result if($debug);
+    } else {
+      "Warning: Memory full!! Ignoring command \"$command\"\n";
+    }
+
+    $line = $line + 1;
+  } ## end while file
+
+  $result = 0;
+  print "Filling up memory with zeros..." if ($line < 32);
+  while ($line < 32)
+  {
+    printf $hex "%04X\n", $result;
+    $line = $line + 1;
+  }
+  print $hex ";end of file\n";
+  print $hex ";end of file\n";
+
+}
+
+
+###############################################################################
+### Main Routine 
+###
+
+&usage() if ( @ARGV < 1 or
+          ! GetOptions('help'       => \$help,
+                       'input=s'    => \$input_file_name,
+                       'output=s'   => \$output_file_name,
+                       'debug'      => \$debug)
+          or defined $help);
+if (not defined $input_file_name) 
+{
+  print "You should provide one input file\n\n" if ($#input_file_names < 1);
+  &usage();
+}
+
+
+$output_file_name = "prog.hex" if (not defined $output_file_name);
+print "\n";
+print "Assemblying K and S assembly program";
+print "\n\n";
+print "  Analysing file $input_file_name\n";
+open(input_asm, "<$input_file_name") or die "\nError: Could not open $input_file_name for reading.\n\n";
+open(output_asm, "> $output_file_name") or die "\nError: Could not open $output_file_name for writing\n\n";
+&process_asm(input_asm, output_asm);
+close(input_log);
+close(output);
+
+print "\n";
