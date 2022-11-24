@@ -21,20 +21,5 @@ import k_and_s_pkg::*;
     output logic                    halt
 );
 
-// remove from here
-// signal added to test environment..
-logic [7:0] counter = 'd0;
-
-//process to test environment ... remove this
-always @(posedge clk or negedge rst_n) begin
-    if (~rst_n)
-        counter <= 'd0;
-    else
-        counter <= counter + 1;
-end
-
-assign halt = ( (&(counter)) ? 1'b1 : 1'b0);
-//until here !!!!
-
 
 endmodule : control_unit
