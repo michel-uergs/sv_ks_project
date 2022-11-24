@@ -31,7 +31,11 @@ logic [15:0]    bus_a;
 logic [15:0]    bus_b;
 logic [15:0]    bus_c;
 logic [15:0]    ula_out;
-logic [15:0]    instruction; 
+logic [15:0]    instruction;
+logic [15:0]    r0;
+logic [15:0]    r1;
+logic [15:0]    r2;
+logic [15:0]    r3;
 logic zero;
 logic neg;
 logic un_ovf;
@@ -44,13 +48,17 @@ always_ff @(posedge clk ) begin : ir_ctrl
     end
 end : ir_ctrl
 
-always_ff @(posedge clk ) begin : pc_ctrl
-    if (pc_enable) begin
-        if (branch) 
-            program_counter <= mem_addr;
-        else
-            program_counter <= program_counter + 1;
+always_ff @(posedge clk or begedge rst_n) begin : pc_ctrl
+    if (!rst_n)begin
+        program_counter <= 'd0;
     end
+    else
+        if (pc_enable) begin
+            if (branch) 
+                program_counter <= mem_addr;
+            else
+                program_counter <= program_counter + 1;
+        end
 end : pc_ctrl
 
 always_comb begin : ula_ctrl
@@ -179,12 +187,18 @@ always_comb begin : decoder
 end : decoder
 
 //BANCO DE REGISTRADORES
-always @(posedge clk) begin 
+always_ff @(posedge clk or negedge rst_n) begin
 
-    if(!rst_n) begin
-            r0 = 15'b000000000000000;
-            r1 = 15'b000000000000000;
-            r2 = 15'b000000000000000;
-            r3 = 15'b000000000000000;
-        end
+    if (!rst_n) begin
+        r0 <= 15'b000000000000000;
+        r1 <= 15'b000000000000000;
+        r2 <= 15'b000000000000000;
+        r3 <= 15'b000000000000000;
+    end
+    
+    if (write_reg_enable) begin
+        r3 <= bus_c;
+    end
+end
+
 endmodule : data_path
