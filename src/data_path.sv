@@ -179,5 +179,12 @@ always_comb begin : decoder
 end : decoder
 
 //BANCO DE REGISTRADORES
+always @(posedge clk) begin 
 
+    if(!rst_n) begin
+            r0 = 15'b000000000000000;
+            r1 = 15'b000000000000000;
+            r2 = 15'b000000000000000;
+            r3 = 15'b000000000000000;
+        end
 endmodule : data_path
