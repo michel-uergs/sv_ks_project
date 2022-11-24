@@ -118,25 +118,25 @@ always_comb begin : decoder
         8'b1010000100: begin        // ADD
             decoded_instruction = I_ADD
             a_addr = instruction[1:0];
-            b_addr = instruction[3:0];
+            b_addr = instruction[3:2];
             c_addr = instruction[5:4];
         end
         8'b1010001000: begin        // SUB
             decoded_instruction = I_SUB
             a_addr = instruction[1:0];
-            b_addr = instruction[3:0];
+            b_addr = instruction[3:2];
             c_addr = instruction[5:4];
         end
         8'b1010001100: begin        // AND
             decoded_instruction = I_AND
             a_addr = instruction[1:0];
-            b_addr = instruction[3:0];
+            b_addr = instruction[3:2];
             c_addr = instruction[5:4];
         end
         8'b1010010000: begin        // OR 
             decoded_instruction = I_OR
             a_addr = instruction[1:0];
-            b_addr = instruction[3:0];
+            b_addr = instruction[3:2];
             c_addr = instruction[5:4];
         end  
         
