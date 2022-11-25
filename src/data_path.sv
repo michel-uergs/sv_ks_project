@@ -48,7 +48,7 @@ always_ff @(posedge clk ) begin : ir_ctrl
     end
 end : ir_ctrl
 
-always_ff @(posedge clk or begedge rst_n) begin : pc_ctrl
+always_ff @(posedge clk or negedge rst_n) begin : pc_ctrl
     if (!rst_n)begin
         program_counter <= 'd0;
     end
@@ -65,7 +65,7 @@ always_comb begin : ula_ctrl
     case (operation)
 
         2'b00: begin // soma 
-            {carry_in_ultimo_bit, ula_out[14:0]} = bus_a[14:0] + bus_b[14:0]
+            {carry_in_ultimo_bit,ula_out[14:0]} = bus_a[14:0] + bus_b[14:0];
             {un_ovf, ula_out[15]} = bus_a[15] + bus_b[15] + carry_in_ultimo_bit;
             sig_ovf = un_ovf ^ carry_in_ultimo_bit;
         end
@@ -122,27 +122,27 @@ always_comb begin : decoder
             //fazer uma ou no control para se manter igual
         end
 
-        //OPERAÇÕES
+        //OPERAÃ‡Ã•ES
         8'b1010000100: begin        // ADD
-            decoded_instruction = I_ADD
+            decoded_instruction = I_ADD;
             a_addr = instruction[1:0];
             b_addr = instruction[3:2];
             c_addr = instruction[5:4];
         end
         8'b1010001000: begin        // SUB
-            decoded_instruction = I_SUB
+            decoded_instruction = I_SUB;
             a_addr = instruction[1:0];
             b_addr = instruction[3:2];
             c_addr = instruction[5:4];
         end
         8'b1010001100: begin        // AND
-            decoded_instruction = I_AND
+            decoded_instruction = I_AND;
             a_addr = instruction[1:0];
             b_addr = instruction[3:2];
             c_addr = instruction[5:4];
         end
         8'b1010010000: begin        // OR 
-            decoded_instruction = I_OR
+            decoded_instruction = I_OR;
             a_addr = instruction[1:0];
             b_addr = instruction[3:2];
             c_addr = instruction[5:4];
@@ -161,27 +161,27 @@ always_comb begin : decoder
             decoded_instruction = I_BNEG;
             mem_addr = instruction[4:0];
         end
-        8'00000101: begin            // BOV      
+        8'b00000101: begin            // BOV      
             decoded_instruction = I_BOV;
             mem_addr = instruction[4:0];     
         end
-        8'00000110: begin            // BNOV       
+        8'b00000110: begin            // BNOV       
             decoded_instruction = I_BNOV;
             mem_addr = instruction[4:0];   
         end
-        8'00001010: begin            // BNNEG        
+        8'b00001010: begin            // BNNEG        
             decoded_instruction = I_BNNEG;
             mem_addr = instruction[4:0];  
         end   
-        8'00001011: begin           // BNZERO      
+        8'b00001011: begin           // BNZERO      
             decoded_instruction = I_BNZERO;
             mem_addr = instruction[4:0];
         end
-        8'11111111: begin           // HALT
+        8'b11111111: begin           // HALT
             decoded_instruction = I_HALT; 
         end
         default: begin               //NOP
-            decoded_instruction = I_NOP
+            decoded_instruction = I_NOP;
         end
     endcase
 end : decoder
