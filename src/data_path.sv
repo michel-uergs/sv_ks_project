@@ -225,5 +225,23 @@ always_ff @(posedge clk or negedge rst_n) begin
             r3 = bus_c;
      endcase 
 end
+// MUXs
+always_ff @(posedge clk ) begin : mux_c_sel
+    if (c_sel) begin
+        bus_c <= ula_out;
+end
+    else begin 
+        bus_c <= data_in;
+    end
+end
+
+always_ff @(posedge clk ) begin : mux_addr_sel
+    if (addr_sel) begin
+        ram_addr <= program_counter;
+end       
+    else begin
+        ram_addr <= mem_addr;
+    end
+end
 
 endmodule : data_path
