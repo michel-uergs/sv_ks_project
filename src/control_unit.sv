@@ -70,6 +70,27 @@ always_comb begin : calc_next_state
     
         DECODIFICA: begin    
             next_state = BUSCA_INSTR;
+            if(decoded_instruction == I_HALT)
+                next_state = FIM_PROGRAMA;
+            else if(decoded_instruction == I_LOAD) begin
+                next_state = LOAD_1;
+                addr_sel = 1'b1;
+            end
+        end
+        LOAD_1 : begin
+            next_state = LOAD_2;
+            addr_sel = 1'b1;
+            c_sel = 1'b1;
+        end
+        LOAD_2 : begin 
+            next_state = BUSCA_INSTR;
+            addr_sel = 1'b1;
+            c_sel = 1'b1;
+            write_reg_enable = 1'b1;
+        end
+        FIM_PROGRAMA : begin
+            next_state = FIM_PROGRAMA;
+            halt = 1'b1;
         end
     endcase
 end : calc_next_state
