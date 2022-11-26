@@ -64,28 +64,32 @@ end : pc_ctrl
 always_comb begin : ula_ctrl
     case (operation)
 
-        2'b00: begin // soma 
-            {carry_in_ultimo_bit,ula_out[14:0]} = bus_a[14:0] + bus_b[14:0];
-            {un_ovf, ula_out[15]} = bus_a[15] + bus_b[15] + carry_in_ultimo_bit;
-            sig_ovf = un_ovf ^ carry_in_ultimo_bit;
-        end
-
-        2'b01: begin // and
-            ula_out = bus_a & bus_b;
-            un_ovf = 1'b0;
-            sig_ovf = 1'b0;
-            carry_in_ultimo_bit = 1'b0;
-        end
-
-        2'b10: begin // or
+        2'b00: begin // or
             ula_out = bus_a | bus_b;
             un_ovf = 1'b0;
             sig_ovf = 1'b0;
             carry_in_ultimo_bit = 1'b0;
         end
 
-        default: begin // sub
-            // tem que fazer ainda
+        2'b01: begin // add
+            {carry_in_ultimo_bit,ula_out[14:0]} = bus_a[14:0] + bus_b[14:0];
+            {un_ovf, ula_out[15]} = bus_a[15] + bus_b[15] + carry_in_ultimo_bit;
+            sig_ovf = un_ovf ^ carry_in_ultimo_bit;
+        end
+
+        2'b10: begin // sub
+            assign bus_b = ~(bus_b) + 1;
+            {carry_in_ultimo_bit,ula_out[14:0]} = bus_a[14:0] + bus_b[14:0];
+            {un_ovf, ula_out[15]} = bus_a[15] + bus_b[15] + carry_in_ultimo_bit;
+            sig_ovf = un_ovf ^ carry_in_ultimo_bit;
+            
+        end
+
+        default: begin // and         
+            ula_out = bus_a & bus_b;
+            un_ovf = 1'b0;
+            sig_ovf = 1'b0;
+            carry_in_ultimo_bit = 1'b0;
 
         end
         
@@ -122,26 +126,26 @@ always_comb begin : decoder
             //fazer uma ou no control para se manter igual
         end
 
-        //OPERAÃ‡Ã•ES
-        8'b1010000100: begin        // ADD
+        //OPERAÃƒâ€¡Ãƒâ€¢ES
+        8'b10100001: begin        // ADD
             decoded_instruction = I_ADD;
             a_addr = instruction[1:0];
             b_addr = instruction[3:2];
             c_addr = instruction[5:4];
         end
-        8'b1010001000: begin        // SUB
+        8'b10100010: begin        // SUB
             decoded_instruction = I_SUB;
             a_addr = instruction[1:0];
             b_addr = instruction[3:2];
             c_addr = instruction[5:4];
         end
-        8'b1010001100: begin        // AND
+        8'b10100011: begin        // AND
             decoded_instruction = I_AND;
             a_addr = instruction[1:0];
             b_addr = instruction[3:2];
             c_addr = instruction[5:4];
         end
-        8'b1010010000: begin        // OR 
+        8'b10100100: begin        // OR 
             decoded_instruction = I_OR;
             a_addr = instruction[1:0];
             b_addr = instruction[3:2];
@@ -187,18 +191,39 @@ always_comb begin : decoder
 end : decoder
 
 //BANCO DE REGISTRADORES
-always_ff @(posedge clk or negedge rst_n) begin
-
-    if (!rst_n) begin
-        r0 <= 15'b000000000000000;
-        r1 <= 15'b000000000000000;
-        r2 <= 15'b000000000000000;
-        r3 <= 15'b000000000000000;
-    end
-    
-    if (write_reg_enable) begin
-        r3 <= bus_c;
-    end
+always_ff @(posedge clk or negedge rst_n) begin 
+    if(write_reg_enable) begin
+      case(a_addr)
+        2'b00:
+            bus_a = r0;  
+         2'b01:
+            bus_a = r1;  
+         2'b10:
+            bus_a = r2;
+         2'b11:
+            bus_a = r3;
+    endcase
+  end
+     case(b_addr)
+         2'b00:
+            bus_b = r0;  
+         2'b01:
+            bus_b = r1;  
+         2'b10:
+            bus_b = r2;
+         2'b11:
+            bus_b = r3;  
+        endcase      
+    case(c_addr)
+         2'b00:
+            r0 = bus_c;  
+         2'b01:
+            r1 = bus_c;  
+         2'b10:
+            r2 = bus_c;
+         2'b11:
+            r3 = bus_c;
+     endcase 
 end
 
 endmodule : data_path
