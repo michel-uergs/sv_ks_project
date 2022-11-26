@@ -243,5 +243,14 @@ end
         ram_addr <= mem_addr;
     end
 end
+    
+always_ff @(posedge clk ) begin : flags_reg
+    if (flags_reg_enable) begin
+        zero_op <=  zero;
+        neg_op <= neg;
+        unsigned_overflow <= un_ovf; 
+        signed_overflow <= sig_ovf;
+    end
+end
 
 endmodule : data_path
