@@ -31,7 +31,7 @@ STATE_T state;
 STATE_T next_state;
 
 always_ff @(posedge clk or negedge rst_n) begin
-    if (!rsn_t) begin
+    if (!rst_n) begin
         state <= BUSCA_INSTR; 
     end
     else
