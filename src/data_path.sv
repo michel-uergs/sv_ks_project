@@ -226,24 +226,11 @@ always_ff @(posedge clk or negedge rst_n) begin
      endcase 
 end
 // MUXs
-always_ff @(posedge clk ) begin : mux_c_sel
-    if (c_sel) begin
-        bus_c <= ula_out;
-end
-    else begin 
-        bus_c <= data_in;
-    end
-end
 
-always_ff @(posedge clk ) begin : mux_addr_sel
-    if (addr_sel) begin
-        ram_addr <= program_counter;
-end       
-    else begin
-        ram_addr <= mem_addr;
-    end
-end
+assign bus_c = c_sel ? ula_out : data_in;
+assign ram_addr = addr_sel ? program_counter : mem_addr;
     
+ 
 always_ff @(posedge clk ) begin : flags_reg
     if (flags_reg_enable) begin
         zero_op <=  zero;
