@@ -239,5 +239,9 @@ always_ff @(posedge clk ) begin : flags_reg
         signed_overflow <= sig_ovf;
     end
 end
+    
+always_comb begin 
+    assign data_out = bus_a;
+ end
 
 endmodule : data_path
