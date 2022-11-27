@@ -30,7 +30,7 @@ logic [1:0]     c_addr;
 logic [15:0]    bus_a;
 logic [15:0]    bus_b;
 logic [15:0]    bus_c;
-logic [15:0]    ula_out;
+logic [15:0]    alu_out;
 logic [15:0]    instruction;
 logic [15:0]    r0;
 logic [15:0]    r1;
@@ -63,31 +63,32 @@ always_ff @(posedge clk or negedge rst_n) begin : pc_ctrl
 end : pc_ctrl
 
 always_comb begin : ula_ctrl
+assign neg_b = ~(bus_b) + 1;
     case (operation)
 
         2'b00: begin // or
-            ula_out = bus_a | bus_b;
+            alu_out = bus_a | bus_b;
             un_ovf = 1'b0;
             sig_ovf = 1'b0;
             carry_in_ultimo_bit = 1'b0;
         end
 
         2'b01: begin // add
-            {carry_in_ultimo_bit,ula_out[14:0]} = bus_a[14:0] + bus_b[14:0];
-            {un_ovf, ula_out[15]} = bus_a[15] + bus_b[15] + carry_in_ultimo_bit;
+            {carry_in_ultimo_bit,alu_out[14:0]} = bus_a[14:0] + bus_b[14:0];
+            {un_ovf, alu_out[15]} = bus_a[15] + bus_b[15] + carry_in_ultimo_bit;
             sig_ovf = un_ovf ^ carry_in_ultimo_bit;
         end
 
         2'b10: begin // sub
-            assign neg_b = ~(bus_b) + 1;
-            {carry_in_ultimo_bit,ula_out[14:0]} = bus_a[14:0] + neg_b[14:0];
-            {un_ovf, ula_out[15]} = bus_a[15] + neg_b[15] + carry_in_ultimo_bit;
+            
+            {carry_in_ultimo_bit,alu_out[14:0]} = bus_a[14:0] + neg_b[14:0];
+            {un_ovf, alu_out[15]} = bus_a[15] + neg_b[15] + carry_in_ultimo_bit;
             sig_ovf = un_ovf ^ carry_in_ultimo_bit;
             
         end
 
         default: begin // and         
-            ula_out = bus_a & bus_b;
+            alu_out = bus_a & bus_b;
             un_ovf = 1'b0;
             sig_ovf = 1'b0;
             carry_in_ultimo_bit = 1'b0;
@@ -98,8 +99,8 @@ always_comb begin : ula_ctrl
     endcase
 end : ula_ctrl
 
-assign zero = ~|(ula_out);
-assign neg = ula_out[15];
+assign zero = ~|(alu_out);
+assign neg = alu_out[15];
 
 always_comb begin : decoder
     a_addr = 'd0;
@@ -127,7 +128,7 @@ always_comb begin : decoder
             //fazer uma ou no control para se manter igual
         end
 
-        //OPERAÃƒÆ’Ã¢â‚¬Â¡ÃƒÆ’Ã¢â‚¬Â¢ES
+        //OPERAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ES
         8'b10100001: begin        // ADD
             decoded_instruction = I_ADD;
             a_addr = instruction[1:0];
@@ -229,7 +230,7 @@ always_ff @(posedge clk or negedge rst_n) begin
 end
 // MUXs
 
-assign bus_c = (c_sel ? ula_out : data_in);
+assign bus_c = (c_sel ? alu_out : data_in);
 assign ram_addr = (addr_sel ? program_counter : mem_addr);
     
  
