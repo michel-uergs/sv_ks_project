@@ -33,7 +33,7 @@ logic [15:0]    bus_c;
 logic [15:0]    ula_out;
 logic [15:0]    instruction;
 logic [15:0] reg_ [4] = '{ default: 15'd0};
-logi  [15:0]    neg_b;
+logic [15:0]    neg_b;
 logic zero;
 logic neg;
 logic un_ovf;
@@ -86,7 +86,7 @@ always_comb begin : ula_ctrl
             un_ovf = 1'b0;
             sig_ovf = 1'b0;
             carry_in_ultimo_bit = 1'b0;
-        end;
+        end
     endcase
 end : ula_ctrl
 
@@ -192,8 +192,8 @@ assign bus_a = reg_[a_addr];
 assign bus_b = reg_[b_addr];
 
 //MUX's
-assign bus_c = c_sel ? ula_out : data_in;
-assign ram_addr = addr_sel ? program_counter : mem_addr;
+    assign bus_c = (c_sel ? ula_out : data_in);
+    assign ram_addr = (addr_sel ? program_counter : mem_addr);
     
 //FLAGS REGISTRADORES
 always_ff @(posedge clk ) begin : flags_reg
