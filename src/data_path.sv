@@ -41,6 +41,7 @@ logic neg;
 logic un_ovf;
 logic sig_ovf;
 logic carry_in_ultimo_bit;
+logic [15:0]   neg_b;
 
 always_ff @(posedge clk ) begin : ir_ctrl
     if (ir_enable) begin
@@ -78,9 +79,9 @@ always_comb begin : ula_ctrl
         end
 
         2'b10: begin // sub
-            assign bus_b = ~(bus_b) + 1;
-            {carry_in_ultimo_bit,ula_out[14:0]} = bus_a[14:0] + bus_b[14:0];
-            {un_ovf, ula_out[15]} = bus_a[15] + bus_b[15] + carry_in_ultimo_bit;
+            assign neg_b = ~(bus_b) + 1;
+            {carry_in_ultimo_bit,ula_out[14:0]} = bus_a[14:0] + neg_b[14:0];
+            {un_ovf, ula_out[15]} = bus_a[15] + neg_b[15] + carry_in_ultimo_bit;
             sig_ovf = un_ovf ^ carry_in_ultimo_bit;
             
         end
@@ -126,7 +127,7 @@ always_comb begin : decoder
             //fazer uma ou no control para se manter igual
         end
 
-        //OPERAÃƒâ€¡Ãƒâ€¢ES
+        //OPERAÃƒÆ’Ã¢â‚¬Â¡ÃƒÆ’Ã¢â‚¬Â¢ES
         8'b10100001: begin        // ADD
             decoded_instruction = I_ADD;
             a_addr = instruction[1:0];
@@ -193,6 +194,16 @@ end : decoder
 //BANCO DE REGISTRADORES
 always_ff @(posedge clk or negedge rst_n) begin 
     if(write_reg_enable) begin
+    case(c_addr)
+         2'b00:
+            r0 = bus_c;  
+         2'b01:
+            r1 = bus_c;  
+         2'b10:
+            r2 = bus_c;
+         2'b11:
+            r3 = bus_c;
+    endcase 
       case(a_addr)
         2'b00:
             bus_a = r0;  
@@ -214,21 +225,12 @@ always_ff @(posedge clk or negedge rst_n) begin
          2'b11:
             bus_b = r3;  
         endcase      
-    case(c_addr)
-         2'b00:
-            r0 = bus_c;  
-         2'b01:
-            r1 = bus_c;  
-         2'b10:
-            r2 = bus_c;
-         2'b11:
-            r3 = bus_c;
-     endcase 
+    
 end
 // MUXs
 
-assign bus_c = c_sel ? ula_out : data_in;
-assign ram_addr = addr_sel ? program_counter : mem_addr;
+assign bus_c = (c_sel ? ula_out : data_in);
+assign ram_addr = (addr_sel ? program_counter : mem_addr);
     
  
 always_ff @(posedge clk ) begin : flags_reg
@@ -239,9 +241,9 @@ always_ff @(posedge clk ) begin : flags_reg
         signed_overflow <= sig_ovf;
     end
 end
-    
-always_comb begin 
+
+always_comb begin
     assign data_out = bus_a;
- end
+end
 
 endmodule : data_path
