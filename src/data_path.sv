@@ -192,8 +192,9 @@ assign bus_a = reg_[a_addr];
 assign bus_b = reg_[b_addr];
 
 //MUX's
-    assign bus_c = (c_sel ? ula_out : data_in);
-    assign ram_addr = (addr_sel ? program_counter : mem_addr);
+   assign bus_c = (c_sel == 1) ? (ula_out) : (data_in);
+    assign ram_addr = (addr_sel == 1) ? (mem_addr) : (program_counter);
+    
     
 //FLAGS REGISTRADORES
 always_ff @(posedge clk ) begin : flags_reg
