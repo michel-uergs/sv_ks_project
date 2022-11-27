@@ -30,18 +30,15 @@ logic [1:0]     c_addr;
 logic [15:0]    bus_a;
 logic [15:0]    bus_b;
 logic [15:0]    bus_c;
-logic [15:0]    alu_out;
+logic [15:0]    ula_out;
 logic [15:0]    instruction;
-logic [15:0]    r0;
-logic [15:0]    r1;
-logic [15:0]    r2;
-logic [15:0]    r3;
+logic [15:0] reg_ [4] = '{ default: 15'd0};
+logi  [15:0]    neg_b;
 logic zero;
 logic neg;
 logic un_ovf;
 logic sig_ovf;
 logic carry_in_ultimo_bit;
-logic [15:0]   neg_b;
 
 always_ff @(posedge clk ) begin : ir_ctrl
     if (ir_enable) begin
@@ -63,50 +60,44 @@ always_ff @(posedge clk or negedge rst_n) begin : pc_ctrl
 end : pc_ctrl
 
 always_comb begin : ula_ctrl
-assign neg_b = ~(bus_b) + 1;
+    assign neg_b = ~(bus_b) + 1;
     case (operation)
-
         2'b00: begin // or
-            alu_out = bus_a | bus_b;
+            ula_out = bus_a | bus_b;
             un_ovf = 1'b0;
             sig_ovf = 1'b0;
             carry_in_ultimo_bit = 1'b0;
         end
 
         2'b01: begin // add
-            {carry_in_ultimo_bit,alu_out[14:0]} = bus_a[14:0] + bus_b[14:0];
-            {un_ovf, alu_out[15]} = bus_a[15] + bus_b[15] + carry_in_ultimo_bit;
+            {carry_in_ultimo_bit,ula_out[14:0]} = bus_a[14:0] + bus_b[14:0];
+            {un_ovf, ula_out[15]} = bus_a[15] + bus_b[15] + carry_in_ultimo_bit;
             sig_ovf = un_ovf ^ carry_in_ultimo_bit;
         end
-
         2'b10: begin // sub
             
-            {carry_in_ultimo_bit,alu_out[14:0]} = bus_a[14:0] + neg_b[14:0];
-            {un_ovf, alu_out[15]} = bus_a[15] + neg_b[15] + carry_in_ultimo_bit;
+            {carry_in_ultimo_bit,ula_out[14:0]} = bus_a[14:0] + neg_b[14:0];
+            {un_ovf, ula_out[15]} = bus_a[15] + neg_b[15] + carry_in_ultimo_bit;
             sig_ovf = un_ovf ^ carry_in_ultimo_bit;
-            
         end
 
         default: begin // and         
-            alu_out = bus_a & bus_b;
+            ula_out = bus_a & bus_b;
             un_ovf = 1'b0;
             sig_ovf = 1'b0;
             carry_in_ultimo_bit = 1'b0;
-
-        end
-        
-        
+        end;
     endcase
 end : ula_ctrl
 
-assign zero = ~|(alu_out);
-assign neg = alu_out[15];
+assign zero = ~|(ula_out);
+assign neg = ula_out[15];
 
 always_comb begin : decoder
-    a_addr = 'd0;
-    b_addr = 'd0;
-    c_addr = 'd0;
-    mem_addr = 'd0;
+    a_addr      = 'd0;
+    b_addr      = 'd0;
+    c_addr      = 'd0;
+    mem_addr    = 'd0;
 
     //CODIGOS DO SIMULADOR/INSTRUCTION
     case (instruction[15:8])
@@ -125,10 +116,9 @@ always_comb begin : decoder
             c_addr = instruction[3:2];
             a_addr = instruction[1:0];
             b_addr = instruction[1:0];
-            //fazer uma ou no control para se manter igual
         end
 
-        //OPERAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ES
+        //OPERACOES
         8'b10100001: begin        // ADD
             decoded_instruction = I_ADD;
             a_addr = instruction[1:0];
@@ -195,45 +185,17 @@ end : decoder
 //BANCO DE REGISTRADORES
 always_ff @(posedge clk or negedge rst_n) begin 
     if(write_reg_enable) begin
-    case(c_addr)
-         2'b00:
-            r0 = bus_c;  
-         2'b01:
-            r1 = bus_c;  
-         2'b10:
-            r2 = bus_c;
-         2'b11:
-            r3 = bus_c;
-    endcase 
-      case(a_addr)
-        2'b00:
-            bus_a = r0;  
-         2'b01:
-            bus_a = r1;  
-         2'b10:
-            bus_a = r2;
-         2'b11:
-            bus_a = r3;
-    endcase
-  end
-     case(b_addr)
-         2'b00:
-            bus_b = r0;  
-         2'b01:
-            bus_b = r1;  
-         2'b10:
-            bus_b = r2;
-         2'b11:
-            bus_b = r3;  
-        endcase      
-    
+      reg_[c_addr] <= bus_c;
+    end
 end
-// MUXs
+assign bus_a = reg_[a_addr];
+assign bus_b = reg_[b_addr];
 
-assign bus_c = (c_sel ? alu_out : data_in);
-assign ram_addr = (addr_sel ? program_counter : mem_addr);
+//MUX's
+assign bus_c = c_sel ? ula_out : data_in;
+assign ram_addr = addr_sel ? program_counter : mem_addr;
     
- 
+//FLAGS REGISTRADORES
 always_ff @(posedge clk ) begin : flags_reg
     if (flags_reg_enable) begin
         zero_op <=  zero;
@@ -242,9 +204,7 @@ always_ff @(posedge clk ) begin : flags_reg
         signed_overflow <= sig_ovf;
     end
 end
-
-always_comb begin
-    assign data_out = bus_a;
-end
+    
+assign data_out = bus_a;
 
 endmodule : data_path
