@@ -137,17 +137,17 @@ always_comb begin : calc_next_state
                 end
             endcase
         end
-        LOAD_1 : begin
-            next_state = LOAD_2;
-            addr_sel = 1'b1;
-            c_sel = 1'b1;
+         LOAD_1 : begin
+            next_state = BUSCA_INSTR;
+            write_reg_enable = 1'b1;
+            ir_enable = 1'b0;
+            c_sel = 'b0;
         end
         LOAD_2 : begin 
             next_state = BUSCA_INSTR;
-            addr_sel = 1'b1;
-            c_sel = 1'b1;
-            write_reg_enable = 1'b1;
-        end
+            ram_write_enable = 1'b1;
+            ir_enable = 1'b0;
+             addr_sel = 1'b1;
         FIM_PROGRAMA : begin
             next_state = FIM_PROGRAMA;
             halt = 1'b1;
