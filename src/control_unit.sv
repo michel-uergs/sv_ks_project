@@ -21,14 +21,16 @@ import k_and_s_pkg::*;
     output logic                    halt
 );
 
-typedef enum { 
-   
+typedef enum 
+{ 
     DECODIFICA
 ,   BUSCA_INSTR
+,   REG_ESCREVE
 ,   REG_INSTR
 ,   LOAD_1
-,   LOAD_2
+,   STORE_2
 ,   FIM_PROGRAMA
+,   BRANCH_
 
 } STATE_T;
 
@@ -78,62 +80,70 @@ always_comb begin : calc_next_state
                     addr_sel = 1'b1;
                 end
                 I_STORE: begin
-                    next_state = BUSCA_INSTR;
+                    next_state = STORE_2;
                     addr_sel = 1'b1;
-                    ram_write_enable = 1'b1;
+                 
                 end
                 I_MOVE: begin
-                    next_state = BUSCA_INSTR;
-                    operation = 2'b00; 
-                    c_sel = 1'b0;
-                    write_reg_enable = 1'b1;
+                    next_state = REG_ESCREVE;
+                  
                 end 
                 I_ADD: begin
-                    next_state = BUSCA_INSTR;
-                    operation = 2'b01;
-                    c_sel = 1'b0;
-                    write_reg_enable = 1'b1;
-                    flags_reg_enable = 1'b1;
+                    next_state = REG_ESCREVE;
+                    
+                    
                 end        
                 I_SUB: begin
-                    next_state = BUSCA_INSTR;
-                    operation = 2'b10;
-                    c_sel = 1'b0;
-                    write_reg_enable = 1'b1;
-                    flags_reg_enable = 1'b1;
+                    next_state = REG_ESCREVE;
+                   
+                  
                 end        
                 I_AND: begin
-                    next_state = BUSCA_INSTR;
-                    operation = 2'b11;
-                    c_sel = 1'b0;
-                    write_reg_enable = 1'b1;
-                    flags_reg_enable = 1'b1;
+                    next_state = REG_ESCREVE;
+                   
                     end     
                 I_OR:  begin
-                    next_state = BUSCA_INSTR;
-                    operation = 2'b10;
-                    c_sel = 1'b0;
-                    write_reg_enable = 1'b1;
-                    flags_reg_enable = 1'b1;
+                    next_state = REG_ESCREVE;
+                   
                 end    
                 I_BRANCH:begin
-                    next_state = BUSCA_INSTR;
-                    branch = 1'b1;
-                    pc_enable = 1'b1;
-                    addr_sel = 1'b0;
+                    next_state = BRANCH_;
                 end         
                 I_BZERO: begin
-
+                    if (zero_op) begin
+                       next_state = BRANCH_;
+                    end
+                    next_state = BUSCA_INSTR;
                 end
                 I_BNZERO: begin
+                    if (!zero_op) begin
+                        next_state = BRANCH_;
+                    end
+                    next_state = BUSCA_INSTR;
                 end      
                 I_BNEG: begin
+                    if (neg_op) begin
+                        next_state = BRANCH_;
+                    end
+                    next_state = BUSCA_INSTR;
                 end        
                 I_BNNEG: begin
+                    if (!neg_op) begin
+                        next_state = BRANCH_;
+                    end
+                    next_state = BUSCA_INSTR;
                 end       
                 I_BOV: begin
+                    if(unsigned_overflow) begin
+                            next_state = BRANCH_;
+                        end
+                        next_state = BUSCA_INSTR;
                 end         
                 I_BNOV: begin
+                     if( signed_overflow) begin
+                            next_state = BRANCH_;
+                        end
+                        next_state = BUSCA_INSTR;
                 end
             endcase
         end
@@ -141,13 +151,33 @@ always_comb begin : calc_next_state
             next_state = BUSCA_INSTR;
             write_reg_enable = 1'b1;
             ir_enable = 1'b0;
-            c_sel = 'b0;
+            c_sel = 1'b0;
         end
-        LOAD_2 : begin 
+        STORE_2 : begin 
+        
             next_state = BUSCA_INSTR;
             ram_write_enable = 1'b1;
             ir_enable = 1'b0;
-             addr_sel = 1'b1;
+            addr_sel = 1'b1;
+        end
+        REG_ESCREVE: begin
+            next_state = BUSCA_INSTR;
+             write_reg_enable = 1'b1;
+             c_sel = 1'b1;
+             flags_reg_enable = 1'b1;
+             
+             case(decoded_instruction)
+                I_SUB:  operation = 2'b10;
+                I_ADD:  operation = 2'b01;
+                I_AND:  operation = 2'b11;  
+                default: operation = 2'b00;
+            endcase
+        end
+        BRANCH_: begin
+             next_state = BUSCA_INSTR;
+             branch = 1'b1;
+             pc_enable = 1'b1;
+        end
         FIM_PROGRAMA : begin
             next_state = FIM_PROGRAMA;
             halt = 1'b1;
