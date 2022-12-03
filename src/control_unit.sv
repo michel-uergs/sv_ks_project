@@ -107,7 +107,9 @@ always_comb begin : calc_next_state
                    
                 end    
                 I_BRANCH:begin
-                    next_state = BRANCH_;
+                    next_state = BUSCA_INSTR;
+                    branch = 1'b1;
+                    pc_enable = 1'b1;
                 end         
                 I_BZERO: begin
                     if (zero_op) begin
@@ -174,7 +176,6 @@ always_comb begin : calc_next_state
             endcase
         end
         BRANCH_: begin
-             next_state = BUSCA_INSTR;
              branch = 1'b1;
              pc_enable = 1'b1;
         end
