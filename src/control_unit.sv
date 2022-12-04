@@ -145,7 +145,7 @@ always_comb begin : calc_next_state
                         next_state = BUSCA_INSTR;
                 end         
                 I_BNOV: begin
-                     if( signed_overflow) begin
+                    if(!unsigned_overflow) begin
                             branch = 1'b1;
                             pc_enable = 1'b1;
                         end
