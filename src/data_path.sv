@@ -46,17 +46,13 @@ always_ff @(posedge clk ) begin : ir_ctrl
     end
 end : ir_ctrl
 
-always_ff @(posedge clk or negedge rst_n) begin : pc_ctrl
-    if (!rst_n)begin
-        program_counter <= 'd0;
+always_ff @(posedge clk) begin : pc_ctrl
+    if (pc_enable) begin
+        if (branch) 
+            program_counter <= mem_addr;
+        else
+            program_counter <= program_counter + 1;
     end
-    else
-        if (pc_enable) begin
-            if (branch) 
-                program_counter <= mem_addr;
-            else
-                program_counter <= program_counter + 1;
-        end
 end : pc_ctrl
 
 always_comb begin : ula_ctrl
@@ -183,7 +179,7 @@ always_comb begin : decoder
 end : decoder
 
 //BANCO DE REGISTRADORES
-always_ff @(posedge clk or negedge rst_n) begin 
+always_ff @(posedge clk ) begin 
     if(write_reg_enable) begin
       reg_[c_addr] <= bus_c;
     end
