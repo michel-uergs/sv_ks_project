@@ -46,7 +46,10 @@ always_ff @(posedge clk ) begin : ir_ctrl
     end
 end : ir_ctrl
 
-always_ff @(posedge clk) begin : pc_ctrl
+always_ff @(posedge clk or negedge rst_n) begin : pc_ctrl
+    if (!rst_n)begin
+        program_counter <= 'd0;
+    end
     if (pc_enable) begin
         if (branch) 
             program_counter <= mem_addr;
