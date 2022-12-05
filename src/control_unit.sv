@@ -89,22 +89,25 @@ always_comb begin : calc_next_state
                   
                 end 
                 I_ADD: begin
+                    operation = 2'b01;
+                    c_sel = 1'b1;
                     next_state = REG_ESCREVE;
-                    
-                    
                 end        
                 I_SUB: begin
+                    operation = 2'b10;
+                    c_sel = 1'b1;
                     next_state = REG_ESCREVE;
-                   
-                  
                 end        
                 I_AND: begin
+                    operation = 2'b11;
+                    c_sel = 1'b1;
                     next_state = REG_ESCREVE;
                    
                     end     
                 I_OR:  begin
+                    operation = 2'b00;
+                    c_sel = 1'b1;
                     next_state = REG_ESCREVE;
-                   
                 end    
                 I_BRANCH:begin
                     next_state = BRANCH_;
